@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Loan Assistant – Customer</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --orange: #d29922;
+      --red: #f85149;
+      --ai-color: #58a6ff;
+      --human-color: #3fb950;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #1f6feb, #388bfd);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .logo-text { font-size: 18px; font-weight: 600; }
+    .logo-sub { font-size: 12px; color: var(--muted); }
+
+    .status-banner {
+      background: #161b22;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+      transition: background 0.3s;
+    }
+
+    .status-dot.idle { background: var(--muted); }
+    .status-dot.ai { background: var(--ai-color); animation: pulse 1.5s infinite; }
+    .status-dot.human { background: var(--human-color); animation: pulse 1.5s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .agent-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-left: auto;
+    }
+
+    .agent-label.ai { background: rgba(88,166,255,0.15); color: var(--ai-color); }
+    .agent-label.human { background: rgba(63,185,80,0.15); color: var(--human-color); }
+
+    .avatar-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .avatar-ring {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      position: relative;
+      transition: border-color 0.4s;
+    }
+
+    .avatar-ring.ai { border-color: var(--ai-color); box-shadow: 0 0 20px rgba(88,166,255,0.2); }
+    .avatar-ring.human { border-color: var(--human-color); box-shadow: 0 0 20px rgba(63,185,80,0.2); }
+
+    .avatar-ring::after {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 1px solid transparent;
+      transition: border-color 0.4s;
+    }
+
+    .avatar-ring.ai::after { border-color: rgba(88,166,255,0.3); }
+    .avatar-ring.human::after { border-color: rgba(63,185,80,0.3); }
+
+    .agent-name { font-size: 16px; font-weight: 500; }
+    .agent-desc { font-size: 13px; color: var(--muted); text-align: center; }
+
+    .transcript {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      height: 180px;
+      overflow-y: auto;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .transcript-line { line-height: 1.5; }
+    .transcript-line .speaker { font-weight: 500; margin-right: 6px; }
+    .transcript-line.ai .speaker { color: var(--ai-color); }
+    .transcript-line.human .speaker { color: var(--human-color); }
+    .transcript-line.system { color: var(--muted); font-style: italic; }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    button {
+      width: 100%;
+      padding: 13px;
+      border-radius: 10px;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1f6feb, #388bfd);
+      color: white;
+    }
+
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .btn-danger {
+      background: rgba(248,81,73,0.15);
+      color: var(--red);
+      border: 1px solid rgba(248,81,73,0.3);
+    }
+
+    .btn-danger:hover { background: rgba(248,81,73,0.25); }
+    .btn-danger:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .handoff-notice {
+      display: none;
+      background: rgba(63,185,80,0.1);
+      border: 1px solid rgba(63,185,80,0.3);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 13px;
+      color: var(--green);
+      text-align: center;
+    }
+
+    .handoff-notice.visible { display: block; }
+
+    audio { display: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">
+      <div class="logo-icon">💰</div>
+      <div>
+        <div class="logo-text">LoanAssist</div>
+        <div class="logo-sub">AI-Powered Loan Service</div>
+      </div>
+    </div>
+
+    <div class="status-banner">
+      <div class="status-dot idle" id="statusDot"></div>
+      <span id="statusText">Waiting to connect...</span>
+      <span class="agent-label ai" id="agentLabel" style="display:none">AI Agent</span>
+    </div>
+
+    <div class="avatar-area">
+      <div class="avatar-ring" id="avatarRing">🤖</div>
+      <div class="agent-name" id="agentName">AI Loan Assistant</div>
+      <div class="agent-desc" id="agentDesc">Ready to help you with your loan application</div>
+    </div>
+
+    <div class="transcript" id="transcript">
+      <div class="transcript-line system"><span>— Call transcript will appear here —</span></div>
+    </div>
+
+    <div class="handoff-notice" id="handoffNotice">
+      🔄 You're being transferred to a human agent. Please hold...
+    </div>
+
+    <div class="controls">
+      <button class="btn-primary" id="joinBtn" onclick="joinCall()">Join Call</button>
+      <button class="btn-danger" id="endBtn" onclick="endCall()" disabled>End Call</button>
+    </div>
+  </div>
+
+  <audio id="remoteAudio" autoplay></audio>
+
+  <script>
+    const socket = io();
+    let pc = null;
+    let localStream = null;
+    let callActive = false;
+
+    const iceServers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+    socket.emit('register-customer');
+
+    socket.on('call-state', ({ state }) => {
+      updateUI(state);
+    });
+
+    socket.on('handoff-triggered', ({ reason }) => {
+      addTranscript('system', `⚡ Handoff: ${reason}`);
+      document.getElementById('handoffNotice').classList.add('visible');
+      setTimeout(() => document.getElementById('handoffNotice').classList.remove('visible'), 5000);
+    });
+
+    socket.on('call-ended', () => {
+      addTranscript('system', '— Call ended —');
+      cleanup();
+    });
+
+    socket.on('chat-message', ({ text, role }) => {
+      addTranscript(role, text);
+    });
+
+    // WebRTC signaling
+    socket.on('offer', async ({ sdp }) => {
+      if (!pc) await setupPeerConnection();
+      await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      socket.emit('answer', { target: 'agent', sdp: pc.localDescription });
+    });
+
+    socket.on('ice-candidate', ({ candidate }) => {
+      if (pc && candidate) pc.addIceCandidate(new RTCIceCandidate(candidate));
+    });
+
+    async function setupPeerConnection() {
+      pc = new RTCPeerConnection(iceServers);
+
+      pc.onicecandidate = (e) => {
+        if (e.candidate) socket.emit('ice-candidate', { target: 'agent', candidate: e.candidate });
+      };
+
+      pc.ontrack = (e) => {
+        document.getElementById('remoteAudio').srcObject = e.streams[0];
+      };
+
+      if (localStream) {
+        localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+      }
+    }
+
+    async function joinCall() {
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        await setupPeerConnection();
+        callActive = true;
+        document.getElementById('joinBtn').disabled = true;
+        document.getElementById('endBtn').disabled = false;
+        addTranscript('system', '— You joined the call —');
+        socket.emit('start-call');
+      } catch (err) {
+        alert('Microphone access needed: ' + err.message);
+      }
+    }
+
+    function endCall() {
+      socket.emit('end-call');
+      cleanup();
+    }
+
+    function cleanup() {
+      if (localStream) localStream.getTracks().forEach(t => t.stop());
+      if (pc) pc.close();
+      pc = null;
+      localStream = null;
+      callActive = false;
+      document.getElementById('joinBtn').disabled = false;
+      document.getElementById('endBtn').disabled = true;
+      updateUI('idle');
+    }
+
+    function updateUI(state) {
+      const dot = document.getElementById('statusDot');
+      const statusText = document.getElementById('statusText');
+      const avatarRing = document.getElementById('avatarRing');
+      const agentName = document.getElementById('agentName');
+      const agentDesc = document.getElementById('agentDesc');
+      const agentLabel = document.getElementById('agentLabel');
+
+      dot.className = 'status-dot ' + (state === 'ai-active' ? 'ai' : state === 'human-active' ? 'human' : 'idle');
+
+      if (state === 'ai-active') {
+        statusText.textContent = 'Connected to AI Agent';
+        avatarRing.className = 'avatar-ring ai';
+        avatarRing.textContent = '🤖';
+        agentName.textContent = 'AI Loan Assistant';
+        agentDesc.textContent = 'Processing your loan application';
+        agentLabel.textContent = 'AI Agent';
+        agentLabel.className = 'agent-label ai';
+        agentLabel.style.display = 'block';
+      } else if (state === 'human-active') {
+        statusText.textContent = 'Connected to Human Agent';
+        avatarRing.className = 'avatar-ring human';
+        avatarRing.textContent = '👤';
+        agentName.textContent = 'Human Loan Advisor';
+        agentDesc.textContent = 'A specialist is now assisting you';
+        agentLabel.textContent = 'Human Agent';
+        agentLabel.className = 'agent-label human';
+        agentLabel.style.display = 'block';
+      } else {
+        statusText.textContent = 'Waiting to connect...';
+        avatarRing.className = 'avatar-ring';
+        avatarRing.textContent = '🤖';
+        agentName.textContent = 'AI Loan Assistant';
+        agentDesc.textContent = 'Ready to help you with your loan application';
+        agentLabel.style.display = 'none';
+      }
+    }
+
+    function addTranscript(role, text) {
+      const t = document.getElementById('transcript');
+      const line = document.createElement('div');
+      line.className = `transcript-line ${role}`;
+      const speaker = role === 'ai' ? 'AI' : role === 'human' ? 'Agent' : '';
+      line.innerHTML = speaker ? `<span class="speaker">${speaker}:</span>${text}` : `<span>${text}</span>`;
+      t.appendChild(line);
+      t.scrollTop = t.scrollHeight;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LoanAssist Demo</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .container { text-align: center; max-width: 420px; }
+    .icon { font-size: 48px; margin-bottom: 20px; }
+    h1 { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+    p { color: #8b949e; font-size: 14px; margin-bottom: 36px; }
+    .cards { display: flex; flex-direction: column; gap: 14px; }
+    a {
+      display: block;
+      padding: 18px 24px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 15px;
+      transition: all 0.2s;
+    }
+    .agent-link {
+      background: rgba(88,166,255,0.1);
+      border: 1px solid rgba(88,166,255,0.3);
+      color: #58a6ff;
+    }
+    .agent-link:hover { background: rgba(88,166,255,0.18); transform: translateY(-1px); }
+    .customer-link {
+      background: rgba(63,185,80,0.1);
+      border: 1px solid rgba(63,185,80,0.3);
+      color: #3fb950;
+    }
+    .customer-link:hover { background: rgba(63,185,80,0.18); transform: translateY(-1px); }
+    .sub { font-size: 12px; opacity: 0.7; margin-top: 3px; font-weight: 400; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">💰</div>
+    <h1>LoanAssist Demo</h1>
+    <p>AI-to-Human Agent Handoff Demo<br/>Choose your role to get started</p>
+    <div class="cards">
+      <a href="/agent" class="agent-link">
+        🎛 Agent Dashboard
+        <div class="sub">You (the agent) — monitor & control the call</div>
+      </a>
+      <a href="/customer" class="customer-link">
+        📱 Customer View
+        <div class="sub">Share this with your friend</div>
+      </a>
+    </div>
+  </div>
+</body>
+</html>
