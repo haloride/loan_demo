@@ -159,7 +159,7 @@ socket.on('call-ended',()=>{ addT('system','Call ended'); cleanup(); });
 socket.on('chat-message',({text,role})=>addT(role,text));
 socket.on('answer',async({sdp})=>{ try{ await pc.setRemoteDescription(new RTCSessionDescription(sdp)); }catch(e){} });
 socket.on('ice-candidate',async({candidate})=>{ if(pc&&candidate){ try{await pc.addIceCandidate(new RTCIceCandidate(candidate));}catch(e){} } });
-socket.on('agent-ready',async()=>{ log('Agent ready'); if(pc&&localStream) await sendOffer(); });
+socket.on('agent-ready',async()=>{ log('Agent ready — sending offer'); if(pc&&localStream) await sendOffer(); else log('No PC/stream yet'); });
 
 async function joinCall(){
   try{
@@ -178,7 +178,7 @@ async function joinCall(){
     document.getElementById('joinBtn').disabled=true;
     document.getElementById('endBtn').disabled=false;
     socket.emit('start-call');
-    await sendOffer();
+    // Don't send offer yet — wait for agent-ready signal
     // Start AI conversation
     callPhase='ai';
     document.getElementById('stepsRow').style.display='flex';

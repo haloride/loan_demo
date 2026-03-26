@@ -253,6 +253,8 @@ async function connectAudio(){
     document.getElementById('connectBtn').disabled=true;
     document.getElementById('connectBtn').textContent='✓ Audio Ready';
     addT('system','Mic connected — pick a lead from the queue');
+    // If already connected to a customer, signal them now
+    if(activeCustomerSocketId) socket.emit('agent-ready',{customerSocketId:activeCustomerSocketId});
   } catch(e){ alert('Mic error: '+e.message); }
 }
 
