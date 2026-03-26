@@ -262,8 +262,10 @@
     let pc = null;
     let localStream = null;
     let callActive = false;
+    let iceServers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
-    const iceServers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+    // Fetch ICE config from server (includes TURN servers)
+    fetch('/ice-config').then(r => r.json()).then(config => { iceServers = config; }).catch(() => {});
 
     socket.emit('register-customer');
 

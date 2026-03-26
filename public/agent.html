@@ -388,8 +388,10 @@
     let messageCount = 0;
     let callStart = null;
     let timerInterval = null;
+    let iceServers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
-    const iceServers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+    // Fetch ICE config from server (includes TURN servers)
+    fetch('/ice-config').then(r => r.json()).then(config => { iceServers = config; }).catch(() => {});
 
     socket.emit('register-agent');
 
@@ -465,11 +467,12 @@
 
     function takeoverAsHuman() {
       triggerHandoff('Agent manually took over');
+      document.getElementById('takeoverBtn').disabled = true;
     }
 
     function triggerHandoff(reason) {
       socket.emit('trigger-handoff', { reason });
-      document.getElementById('takeoverBtn').disabled = false;
+      document.getElementById('takeoverBtn').disabled = true;
     }
 
     function endCall() {
