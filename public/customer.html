@@ -281,7 +281,27 @@
           if (e.candidate) socket.emit('ice-candidate', { target: 'agent', candidate: e.candidate });
         };
 
-        pc.oniceconnectionstatechange = () => log('ICE: ' + pc.iceConnectionState);
+        pc.oniceconnectionstatechange = () => {
+          const state = pc.iceConnectionState;
+          log('ICE: ' + state);
+          if (state === 'disconnected') {
+            log('Disconnected — attempting ICE restart...');
+            setTimeout(async () => {
+              if (pc && pc.iceConnectionState === 'disconnected') {
+                try {
+                  const offer = await pc.createOffer({ iceRestart: true });
+                  await pc.setLocalDescription(offer);
+                  socket.emit('offer', { target: 'agent', sdp: pc.localDescription });
+                  log('ICE restart offer sent');
+                } catch(e) { log('ICE restart failed: ' + e.message); }
+              }
+            }, 2000);
+          }
+          if (state === 'failed') {
+            log('Connection failed — rejoining...');
+            cleanup();
+          }
+        };
         pc.onconnectionstatechange = () => log('Conn: ' + pc.connectionState);
 
         pc.ontrack = e => {

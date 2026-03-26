@@ -512,7 +512,13 @@
         if (e.candidate) socket.emit('ice-candidate', { target: 'customer', candidate: e.candidate });
       };
 
-      pc.oniceconnectionstatechange = () => addT('system', 'Connection: ' + pc.iceConnectionState);
+      pc.oniceconnectionstatechange = () => {
+        const state = pc.iceConnectionState;
+        addT('system', 'Connection: ' + state);
+        if (state === 'failed') {
+          addT('system', '⚠ Connection failed — ask customer to click Join Call again.');
+        }
+      };
 
       pc.ontrack = (e) => {
         addT('system', 'Remote audio connected ✓');

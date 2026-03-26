@@ -12,28 +12,39 @@ app.use(express.json());
 
 // TURN server config endpoint
 app.get("/ice-config", (req, res) => {
-  res.json({
-    iceServers: [
-      { urls: "stun:stun.l.google.com:19302" },
-      { urls: "stun:stun1.l.google.com:19302" },
-      {
-        urls: "turn:openrelay.metered.ca:80",
-        username: "openrelayproject",
-        credential: "openrelayproject"
-      },
-      {
-        urls: "turn:openrelay.metered.ca:443",
-        username: "openrelayproject",
-        credential: "openrelayproject"
-      },
-      {
-        urls: "turn:openrelay.metered.ca:443?transport=tcp",
-        username: "openrelayproject",
-        credential: "openrelayproject"
-      }
-    ]
-  });
+  const METERED_API_KEY = process.env.METERED_API_KEY || "";
+
+  // If we have a Metered API key, use dynamic credentials
+  if (METERED_API_KEY) {
+    fetch(`https://loanassist.metered.live/api/v1/turn/credentials?apiKey=${METERED_API_KEY}`)
+      .then(r => r.json())
+      .then(iceServers => res.json({ iceServers }))
+      .catch(() => res.json({ iceServers: getFallbackIce() }));
+  } else {
+    res.json({ iceServers: getFallbackIce() });
+  }
 });
+
+function getFallbackIce() {
+  return [
+    { urls: "stun:stun.l.google.com:19302" },
+    { urls: "stun:stun1.l.google.com:19302" },
+    { urls: "stun:stun2.l.google.com:19302" },
+    { urls: "stun:stun3.l.google.com:19302" },
+    { urls: "stun:stun4.l.google.com:19302" },
+    {
+      urls: [
+        "turn:openrelay.metered.ca:80",
+        "turn:openrelay.metered.ca:80?transport=tcp",
+        "turn:openrelay.metered.ca:443",
+        "turn:openrelay.metered.ca:443?transport=tcp",
+        "turns:openrelay.metered.ca:443?transport=tcp"
+      ],
+      username: "openrelayproject",
+      credential: "openrelayproject"
+    }
+  ];
+}
 
 // Routes
 app.get("/agent", (req, res) => {
