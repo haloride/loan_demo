@@ -203,13 +203,27 @@ async function toggleRecording(){
   startRecording();
 }
 
+function getSupportedMimeType(){
+  const types=['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/ogg','audio/mp4'];
+  for(const t of types){ if(MediaRecorder.isTypeSupported(t)) return t; }
+  return '';
+}
+
 function startRecording(){
   if(!localStream) return;
   const chunks=[];
-  mediaRecorder=new MediaRecorder(localStream,{mimeType:'audio/webm'});
-  mediaRecorder.ondataavailable=e=>chunks.push(e.data);
+  const mimeType=getSupportedMimeType();
+  log('Recording format: '+(mimeType||'default'));
+  try{
+    mediaRecorder=new MediaRecorder(localStream, mimeType?{mimeType}:{});
+  } catch(e){
+    mediaRecorder=new MediaRecorder(localStream);
+  }
+  mediaRecorder.ondataavailable=e=>{ if(e.data.size>0) chunks.push(e.data); };
   mediaRecorder.onstop=async()=>{
-    const blob=new Blob(chunks,{type:'audio/webm'});
+    const blob=new Blob(chunks,{type:mediaRecorder.mimeType||'audio/webm'});
+    log('Recorded blob: '+blob.size+' bytes, type: '+blob.type);
+    if(blob.size < 100){ log('Recording too short — try again'); document.getElementById('micHint').textContent='Too short, tap mic again'; document.getElementById('micBtn').disabled=false; return; }
     await processCustomerSpeech(blob);
   };
   mediaRecorder.start();
@@ -231,22 +245,30 @@ function stopRecording(){
 
 async function processCustomerSpeech(audioBlob){
   try{
-    // Transcribe with Whisper
+    document.getElementById('micHint').textContent='Transcribing...';
+    // Determine file extension from mime type
+    const mime=audioBlob.type||'audio/webm';
+    const ext=mime.includes('ogg')?'ogg':mime.includes('mp4')?'mp4':'webm';
+    const filename='audio.'+ext;
+    log('Sending to Whisper: '+filename+' ('+audioBlob.size+' bytes)');
+
     const formData=new FormData();
-    formData.append('file',audioBlob,'audio.webm');
+    formData.append('file', audioBlob, filename);
     formData.append('model','whisper-1');
-    formData.append('language','hi'); // supports Hindi + English
+    // Don't force language — let Whisper auto-detect Hindi/English
     const resp=await fetch('/api/transcribe',{method:'POST',body:formData});
-    const {text}=await resp.json();
-    if(!text||text.trim()===''){
-      document.getElementById('micHint').textContent='Tap mic to speak';
-      return;
-    }
+    const result=await resp.json();
+    log('Whisper response: '+JSON.stringify(result).substring(0,100));
+
+    if(result.error){ log('Whisper error: '+result.error.message); document.getElementById('micHint').textContent='Error — tap mic to retry'; document.getElementById('micBtn').disabled=false; return; }
+    const text=result.text||'';
+    if(!text.trim()){ log('Empty transcript'); document.getElementById('micHint').textContent='Didn't catch that — tap mic to retry'; document.getElementById('micBtn').disabled=false; return; }
+
     log('Customer said: '+text);
     addT('customer',text);
     conversationHistory.push({role:'user',content:text});
     await getAIResponse(text);
-  } catch(e){ log('Transcribe error: '+e.message); document.getElementById('micHint').textContent='Tap mic to speak'; }
+  } catch(e){ log('Transcribe error: '+e.message); document.getElementById('micHint').textContent='Error — tap mic to retry'; document.getElementById('micBtn').disabled=false; }
 }
 
 async function getAIResponse(userText){

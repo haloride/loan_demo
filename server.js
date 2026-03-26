@@ -39,26 +39,34 @@ function getFallbackIce() {
 app.post("/api/transcribe", async (req, res) => {
   try {
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-    if (!OPENAI_API_KEY) return res.status(500).json({ error: "No OpenAI key" });
+    if (!OPENAI_API_KEY) return res.status(500).json({ error: { message: "No OpenAI API key configured" } });
 
-    // Forward the multipart audio to Whisper
+    // Buffer the raw multipart body and forward directly to Whisper
     const chunks = [];
     req.on("data", chunk => chunks.push(chunk));
     req.on("end", async () => {
-      const body = Buffer.concat(chunks);
-      const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${OPENAI_API_KEY}`,
-          "Content-Type": req.headers["content-type"]
-        },
-        body
-      });
-      const data = await response.json();
-      res.json(data);
+      try {
+        const body = Buffer.concat(chunks);
+        console.log("Transcribe request - size:", body.length, "content-type:", req.headers["content-type"]);
+        const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${OPENAI_API_KEY}`,
+            "Content-Type": req.headers["content-type"]
+          },
+          body
+        });
+        const data = await response.json();
+        console.log("Whisper response:", JSON.stringify(data).substring(0, 200));
+        res.json(data);
+      } catch(e) {
+        console.error("Whisper fetch error:", e.message);
+        res.status(500).json({ error: { message: e.message } });
+      }
     });
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    console.error("Transcribe error:", e.message);
+    res.status(500).json({ error: { message: e.message } });
   }
 });
 
