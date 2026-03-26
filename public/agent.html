@@ -7,406 +7,163 @@
   <script src="/socket.io/socket.io.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #f0f4f9;
-      --surface: #ffffff;
-      --border: #e2e8f0;
-      --border-light: #f1f5f9;
-      --text: #0f172a;
-      --text-secondary: #64748b;
-      --text-muted: #94a3b8;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --primary-light: #eff6ff;
-      --green: #16a34a;
-      --green-light: #f0fdf4;
-      --green-border: #bbf7d0;
-      --orange: #d97706;
-      --orange-light: #fffbeb;
-      --orange-border: #fde68a;
-      --red: #dc2626;
-      --red-light: #fef2f2;
-      --red-border: #fecaca;
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04);
-      --radius: 12px;
-      --radius-sm: 8px;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#f0f4f9;--surface:#fff;--border:#e2e8f0;--border-light:#f1f5f9;
+      --text:#0f172a;--secondary:#64748b;--muted:#94a3b8;
+      --primary:#2563eb;--primary-light:#eff6ff;--primary-hover:#1d4ed8;
+      --green:#16a34a;--green-light:#f0fdf4;--green-border:#bbf7d0;
+      --amber:#d97706;--amber-light:#fffbeb;--amber-border:#fde68a;
+      --red:#dc2626;--red-light:#fef2f2;--red-border:#fecaca;
     }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      padding: 0 2px;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .logo-icon {
-      width: 36px; height: 36px;
-      background: var(--primary);
-      border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 17px;
-      box-shadow: 0 2px 8px rgba(37,99,235,0.3);
-    }
-
-    .logo-name { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
-    .logo-sub { font-size: 11px; color: var(--text-muted); font-weight: 400; }
-
-    .header-badge {
-      font-size: 11px; font-weight: 600;
-      padding: 5px 12px; border-radius: 20px;
-      background: var(--primary-light); color: var(--primary);
-      border: 1px solid #bfdbfe;
-      letter-spacing: 0.03em;
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: 16px;
-      max-width: 1200px;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-
-    .card-header {
-      padding: 16px 20px 0;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-
-    .card-body { padding: 16px 20px 20px; }
-
-    /* Status bar */
-    .status-bar {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 18px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      background: var(--bg);
-      margin-bottom: 16px;
-      transition: all 0.3s;
-    }
-
-    .status-bar.ai-active { background: #eff6ff; border-color: #bfdbfe; }
-    .status-bar.human-active { background: var(--green-light); border-color: var(--green-border); }
-
-    .status-dot {
-      width: 9px; height: 9px; border-radius: 50%;
-      background: var(--text-muted); flex-shrink: 0;
-    }
-    .status-dot.ai { background: var(--primary); animation: pulse 1.8s infinite; }
-    .status-dot.human { background: var(--green); animation: pulse 1.8s infinite; }
-
-    @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(0.85); } }
-
-    .status-info { flex: 1; }
-    .status-title { font-size: 13px; font-weight: 600; color: var(--text); }
-    .status-sub { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
-
-    .mode-pill {
-      font-size: 11px; font-weight: 600;
-      padding: 4px 10px; border-radius: 20px;
-    }
-    .mode-pill.idle { background: #f1f5f9; color: var(--text-secondary); }
-    .mode-pill.ai { background: var(--primary-light); color: var(--primary); }
-    .mode-pill.human { background: var(--green-light); color: var(--green); }
-
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .logo{display:flex;align-items:center;gap:10px}
+    .logo-icon{width:36px;height:36px;background:var(--primary);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 2px 8px rgba(37,99,235,.3)}
+    .logo-name{font-size:16px;font-weight:700;letter-spacing:-.3px}
+    .logo-sub{font-size:11px;color:var(--muted)}
+    .badge{font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;background:var(--primary-light);color:var(--primary);border:1px solid #bfdbfe}
+    .layout{display:grid;grid-template-columns:1fr 320px;gap:16px;max-width:1200px}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+    .card-header{padding:16px 20px 0;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+    .card-body{padding:16px 20px 20px}
+    /* Active call panel */
+    .call-status{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg);margin-bottom:16px;transition:all .3s}
+    .call-status.ai{background:var(--primary-light);border-color:#bfdbfe}
+    .call-status.human{background:var(--green-light);border-color:var(--green-border)}
+    .sdot{width:9px;height:9px;border-radius:50%;background:var(--muted);flex-shrink:0}
+    .sdot.ai{background:var(--primary);animation:pulse 1.8s infinite}
+    .sdot.human{background:var(--green);animation:pulse 1.8s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .call-info{flex:1}
+    .call-title{font-size:13px;font-weight:600}
+    .call-sub{font-size:12px;color:var(--secondary);margin-top:2px}
+    .mode-pill{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px}
+    .mode-pill.idle{background:#f1f5f9;color:var(--secondary)}
+    .mode-pill.ai{background:var(--primary-light);color:var(--primary)}
+    .mode-pill.human{background:var(--green-light);color:var(--green)}
+    /* Customer details */
+    .details-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+    .detail-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+    .detail-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+    .detail-val{font-size:13px;font-weight:500;margin-top:3px;color:var(--text)}
     /* Transcript */
-    .transcript {
-      background: #fafbfc;
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-sm);
-      padding: 14px;
-      height: 280px;
-      overflow-y: auto;
-      font-size: 13px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .transcript::-webkit-scrollbar { width: 4px; }
-    .transcript::-webkit-scrollbar-track { background: transparent; }
-    .transcript::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-    .t-msg { display: flex; flex-direction: column; gap: 2px; }
-    .t-label { font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
-    .t-label.ai { color: var(--primary); }
-    .t-label.human { color: var(--green); }
-    .t-label.customer { color: var(--orange); }
-    .t-text { font-size: 13px; color: var(--text); line-height: 1.5; }
-    .t-system { font-size: 11px; color: var(--text-muted); font-style: italic; text-align: center; padding: 2px 0; }
-
-    /* Chat input */
-    .chat-row {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .chat-input {
-      flex: 1;
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-family: 'Inter', sans-serif;
-      font-size: 13px;
-      color: var(--text);
-      background: var(--surface);
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .chat-input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-    }
-
-    .chat-input::placeholder { color: var(--text-muted); }
-
-    .send-btn {
-      padding: 10px 18px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-family: 'Inter', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s;
-      white-space: nowrap;
-    }
-
-    .send-btn:hover { background: var(--primary-hover); }
-
-    /* Right column */
-    .right-col { display: flex; flex-direction: column; gap: 16px; }
-
-    /* Buttons */
-    .btn-stack { display: flex; flex-direction: column; gap: 8px; }
-
-    .btn {
-      width: 100%;
-      padding: 11px 16px;
-      border-radius: var(--radius-sm);
-      border: none;
-      font-family: 'Inter', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-    }
-
-    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
-
-    .btn-primary {
-      background: var(--primary); color: white;
-      box-shadow: 0 1px 3px rgba(37,99,235,0.3);
-    }
-    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 3px 8px rgba(37,99,235,0.3); }
-
-    .btn-green {
-      background: var(--green); color: white;
-      box-shadow: 0 1px 3px rgba(22,163,74,0.3);
-    }
-    .btn-green:hover:not(:disabled) { background: #15803d; transform: translateY(-1px); }
-
-    .btn-red {
-      background: white; color: var(--red);
-      border: 1.5px solid var(--red-border);
-    }
-    .btn-red:hover:not(:disabled) { background: var(--red-light); }
-
-    /* Trigger buttons */
-    .trigger-list { display: flex; flex-direction: column; gap: 6px; }
-
-    .trigger-btn {
-      width: 100%;
-      padding: 10px 14px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      text-align: left;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: all 0.15s;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .trigger-btn:hover:not(:disabled) {
-      border-color: #fbbf24;
-      background: var(--orange-light);
-      transform: translateX(2px);
-    }
-
-    .trigger-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    .trigger-icon {
-      width: 30px; height: 30px;
-      background: var(--bg);
-      border-radius: 7px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; flex-shrink: 0;
-    }
-
-    .trigger-text-wrap { flex: 1; }
-    .trigger-name { font-size: 12px; font-weight: 500; color: var(--text); }
-    .trigger-desc { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-
+    .transcript{background:#fafbfc;border:1px solid var(--border-light);border-radius:10px;padding:14px;height:220px;overflow-y:auto;font-size:13px;display:flex;flex-direction:column;gap:8px}
+    .transcript::-webkit-scrollbar{width:4px}
+    .transcript::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+    .t-msg{display:flex;flex-direction:column;gap:2px}
+    .t-label{font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+    .t-label.ai{color:var(--primary)}
+    .t-label.human{color:var(--green)}
+    .t-label.customer{color:var(--amber)}
+    .t-text{font-size:13px;line-height:1.5}
+    .t-system{font-size:11px;color:var(--muted);font-style:italic;text-align:center;padding:2px 0}
+    .chat-row{display:flex;gap:8px;margin-top:12px}
+    .chat-input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s}
+    .chat-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+    .chat-input::placeholder{color:var(--muted)}
+    .send-btn{padding:10px 18px;background:var(--primary);color:white;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap}
+    .send-btn:hover{background:var(--primary-hover)}
+    /* Right col */
+    .right-col{display:flex;flex-direction:column;gap:16px}
+    .btn{width:100%;padding:11px 16px;border-radius:8px;border:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px}
+    .btn:disabled{opacity:.45;cursor:not-allowed}
+    .btn-primary{background:var(--primary);color:white;box-shadow:0 1px 3px rgba(37,99,235,.3)}
+    .btn-primary:hover:not(:disabled){background:var(--primary-hover);transform:translateY(-1px)}
+    .btn-green{background:var(--green);color:white}
+    .btn-green:hover:not(:disabled){background:#15803d;transform:translateY(-1px)}
+    .btn-red{background:white;color:var(--red);border:1.5px solid var(--red-border)}
+    .btn-red:hover:not(:disabled){background:var(--red-light)}
+    .btn-stack{display:flex;flex-direction:column;gap:8px}
+    /* Queue */
+    .queue-list{display:flex;flex-direction:column;gap:8px}
+    .queue-item{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;transition:all .2s}
+    .queue-item:hover{border-color:var(--amber);background:var(--amber-light)}
+    .q-num{width:28px;height:28px;border-radius:50%;background:var(--amber-light);border:1px solid var(--amber-border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--amber);flex-shrink:0}
+    .q-info{flex:1}
+    .q-name{font-size:13px;font-weight:500}
+    .q-meta{font-size:11px;color:var(--muted);margin-top:2px}
+    .q-pickup{padding:6px 12px;background:var(--primary);color:white;border:none;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap}
+    .q-pickup:hover{background:var(--primary-hover)}
+    .queue-empty{text-align:center;padding:24px;color:var(--muted);font-size:13px}
     /* Stats */
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-
-    .stat-box {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 12px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .stat-val { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
-    .stat-lbl { font-size: 11px; color: var(--text-muted); font-weight: 400; }
-
-    audio { display: none; }
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .stat-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+    .stat-val{font-size:20px;font-weight:700;letter-spacing:-.5px}
+    .stat-lbl{font-size:11px;color:var(--muted)}
+    audio{display:none}
   </style>
 </head>
 <body>
-
 <header>
   <div class="logo">
     <div class="logo-icon">💰</div>
-    <div>
-      <div class="logo-name">LoanAssist</div>
-      <div class="logo-sub">Agent Dashboard</div>
-    </div>
+    <div><div class="logo-name">LoanAssist</div><div class="logo-sub">Agent Dashboard</div></div>
   </div>
-  <div class="header-badge">AGENT VIEW</div>
+  <div class="badge">AGENT VIEW</div>
 </header>
 
 <div class="layout">
-  <!-- Left: Main -->
-  <div style="display:flex;flex-direction:column;gap:16px;">
-
+  <!-- Left -->
+  <div style="display:flex;flex-direction:column;gap:16px">
     <div class="card">
-      <div class="card-body" style="padding-top:18px;">
-
-        <div class="status-bar idle" id="statusBar">
-          <div class="status-dot" id="statusDot"></div>
-          <div class="status-info">
-            <div class="status-title" id="statusTitle">No active call</div>
-            <div class="status-sub" id="statusSub">Waiting for customer to join...</div>
+      <div class="card-body" style="padding-top:18px">
+        <div class="call-status idle" id="callStatus">
+          <div class="sdot" id="sdot"></div>
+          <div class="call-info">
+            <div class="call-title" id="callTitle">No active call</div>
+            <div class="call-sub" id="callSub">Pick a lead from the queue to begin</div>
           </div>
           <div class="mode-pill idle" id="modePill">Idle</div>
         </div>
 
-        <div style="font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">Live Transcript</div>
+        <!-- Customer details (shown when connected) -->
+        <div id="detailsSection" style="display:none">
+          <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Customer Details</div>
+          <div class="details-grid">
+            <div class="detail-box"><div class="detail-label">Name</div><div class="detail-val" id="dName">—</div></div>
+            <div class="detail-box"><div class="detail-label">PAN</div><div class="detail-val" id="dPan">—</div></div>
+            <div class="detail-box"><div class="detail-label">DOB</div><div class="detail-val" id="dDob">—</div></div>
+            <div class="detail-box"><div class="detail-label">Employment</div><div class="detail-val" id="dEmp">—</div></div>
+            <div class="detail-box"><div class="detail-label">Income</div><div class="detail-val" id="dIncome">—</div></div>
+            <div class="detail-box"><div class="detail-label">Pincode</div><div class="detail-val" id="dPin">—</div></div>
+          </div>
+        </div>
 
+        <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Live Transcript</div>
         <div class="transcript" id="transcript">
-          <div class="t-system">— Transcript will appear when call starts —</div>
+          <div class="t-system">— Connect to a customer to see transcript —</div>
         </div>
-
         <div class="chat-row">
-          <input class="chat-input" id="msgInput" placeholder="Type a message as agent (visible in transcript)..." />
-          <button class="send-btn" onclick="sendMessage()">Send</button>
+          <input class="chat-input" id="msgInput" placeholder="Type a message to customer..." disabled/>
+          <button class="send-btn" onclick="sendMessage()" id="sendBtn" disabled>Send</button>
         </div>
-
       </div>
     </div>
-
   </div>
 
-  <!-- Right: Controls -->
+  <!-- Right -->
   <div class="right-col">
-
-    <!-- Call Controls -->
+    <!-- Call controls -->
     <div class="card">
       <div class="card-header">Call Controls</div>
       <div class="card-body">
         <div class="btn-stack">
-          <button class="btn btn-primary" id="connectBtn" onclick="connectAudio()">
-            🎙 Connect My Audio
-          </button>
-          <button class="btn btn-green" id="takeoverBtn" onclick="takeoverAsHuman()" disabled>
-            👤 Take Over as Human Agent
-          </button>
-          <button class="btn btn-red" id="endBtn" onclick="endCall()" disabled>
-            ✕ End Call
-          </button>
+          <button class="btn btn-primary" id="connectBtn" onclick="connectAudio()">🎙 Connect My Audio</button>
+          <button class="btn btn-red" id="endBtn" onclick="endCurrentCall()" disabled>✕ End Call</button>
         </div>
       </div>
     </div>
 
-    <!-- Handoff Triggers -->
+    <!-- Queue -->
     <div class="card">
-      <div class="card-header">Trigger Handoff Scenarios</div>
+      <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;padding-bottom:4px">
+        <span>Queue</span>
+        <span style="background:var(--amber-light);color:var(--amber);border:1px solid var(--amber-border);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700" id="queueBadge">0</span>
+      </div>
       <div class="card-body">
-        <div class="trigger-list">
-          <button class="trigger-btn" id="t1" onclick="triggerHandoff('Language barrier detected')" disabled>
-            <div class="trigger-icon">🌐</div>
-            <div class="trigger-text-wrap">
-              <div class="trigger-name">Language Barrier</div>
-              <div class="trigger-desc">Unsupported dialect detected</div>
-            </div>
-          </button>
-          <button class="trigger-btn" id="t2" onclick="triggerHandoff('Customer requested file upload')" disabled>
-            <div class="trigger-icon">📎</div>
-            <div class="trigger-text-wrap">
-              <div class="trigger-name">File Upload Requested</div>
-              <div class="trigger-desc">Customer needs to send documents</div>
-            </div>
-          </button>
-          <button class="trigger-btn" id="t3" onclick="triggerHandoff('Complex query beyond AI scope')" disabled>
-            <div class="trigger-icon">🧠</div>
-            <div class="trigger-text-wrap">
-              <div class="trigger-name">Complex Query</div>
-              <div class="trigger-desc">Outside AI capabilities</div>
-            </div>
-          </button>
-          <button class="trigger-btn" id="t4" onclick="triggerHandoff('Customer requested human agent')" disabled>
-            <div class="trigger-icon">🙋</div>
-            <div class="trigger-text-wrap">
-              <div class="trigger-name">Customer Request</div>
-              <div class="trigger-desc">Explicitly asked for human</div>
-            </div>
-          </button>
+        <div class="queue-list" id="queueList">
+          <div class="queue-empty">No leads in queue</div>
         </div>
       </div>
     </div>
@@ -416,217 +173,176 @@
       <div class="card-header">Session Stats</div>
       <div class="card-body">
         <div class="stats-grid">
-          <div class="stat-box">
-            <div class="stat-val" id="statDuration">0:00</div>
-            <div class="stat-lbl">Duration</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-val" id="statHandoffs">0</div>
-            <div class="stat-lbl">Handoffs</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-val" id="statMode">—</div>
-            <div class="stat-lbl">Current Mode</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-val" id="statMessages">0</div>
-            <div class="stat-lbl">Messages</div>
-          </div>
+          <div class="stat-box"><div class="stat-val" id="statDuration">0:00</div><div class="stat-lbl">Duration</div></div>
+          <div class="stat-box"><div class="stat-val" id="statServed">0</div><div class="stat-lbl">Leads Served</div></div>
+          <div class="stat-box"><div class="stat-val" id="statQueue">0</div><div class="stat-lbl">In Queue</div></div>
+          <div class="stat-box"><div class="stat-val" id="statMode">—</div><div class="stat-lbl">Current Mode</div></div>
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
 <audio id="remoteAudio" autoplay playsinline></audio>
 
 <script>
-  const socket = io();
-  let pc = null;
-  let localStream = null;
-  let callState = 'idle';
-  let handoffCount = 0;
-  let messageCount = 0;
-  let callStart = null;
-  let timerInterval = null;
-  let iceConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+const socket = io();
+let pc = null;
+let localStream = null;
+let iceConfig = {iceServers:[{urls:'stun:stun.l.google.com:19302'}]};
+let activeCustomerSocketId = null;
+let callStart = null;
+let timerInterval = null;
+let servedCount = 0;
+let queueData = [];
 
-  fetch('/ice-config').then(r => r.json()).then(cfg => { iceConfig = cfg; }).catch(() => {});
+fetch('/ice-config').then(r=>r.json()).then(cfg=>{iceConfig=cfg;}).catch(()=>{});
 
-  socket.emit('register-agent');
+socket.emit('register-agent');
+socket.on('registered', ()=>{ addT('system','Agent dashboard ready'); });
 
-  socket.on('call-state', ({ state }) => {
-    callState = state;
-    updateCallUI(state);
-    if (state !== 'idle' && !callStart) {
-      callStart = Date.now();
-      timerInterval = setInterval(updateTimer, 1000);
-    }
-    if (state === 'idle') {
-      clearInterval(timerInterval);
-      callStart = null;
-      document.getElementById('statDuration').textContent = '0:00';
-    }
-  });
+socket.on('queue-update', ({queue}) => {
+  queueData = queue;
+  renderQueue(queue);
+  document.getElementById('queueBadge').textContent = queue.length;
+  document.getElementById('statQueue').textContent = queue.length;
+});
 
-  socket.on('handoff-triggered', ({ reason }) => {
-    handoffCount++;
-    document.getElementById('statHandoffs').textContent = handoffCount;
-    addT('system', `Handoff triggered: ${reason}`);
-  });
+socket.on('connect-to-customer', ({customerSocketId, details}) => {
+  activeCustomerSocketId = customerSocketId;
+  showDetails(details);
+  updateCallUI('human-active');
+  addT('system', 'Connected to customer — you can now speak directly');
+  document.getElementById('msgInput').disabled = false;
+  document.getElementById('sendBtn').disabled = false;
+  document.getElementById('endBtn').disabled = false;
+  callStart = Date.now();
+  timerInterval = setInterval(updateTimer, 1000);
+  // Signal customer for WebRTC
+  socket.emit('agent-ready', {customerSocketId});
+});
 
-  socket.on('call-ended', () => { addT('system', 'Call ended'); cleanup(); });
+socket.on('offer', async({sdp}) => {
+  addT('system','Customer audio connecting...');
+  try {
+    if(!pc){ addT('system','⚠ Connect your audio first'); return; }
+    await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+    const ans = await pc.createAnswer();
+    await pc.setLocalDescription(ans);
+    socket.emit('answer', {target: activeCustomerSocketId, sdp: pc.localDescription});
+    addT('system','Audio handshake done ✓');
+  } catch(e){ addT('system','Error: '+e.message); }
+});
 
-  socket.on('chat-message', ({ text, role }) => {
-    addT(role, text);
-    messageCount++;
-    document.getElementById('statMessages').textContent = messageCount;
-  });
+socket.on('ice-candidate', async({candidate}) => {
+  if(pc&&candidate){ try{await pc.addIceCandidate(new RTCIceCandidate(candidate));}catch(e){} }
+});
 
-  // Agent answers the customer's offer
-  socket.on('offer', async ({ sdp }) => {
-    addT('system', 'Customer connected, setting up audio...');
-    try {
-      if (!pc) { addT('system', 'Click "Connect My Audio" first, then ask customer to rejoin.'); return; }
-      await pc.setRemoteDescription(new RTCSessionDescription(sdp));
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-      socket.emit('answer', { target: 'customer', sdp: pc.localDescription });
-      addT('system', 'Audio handshake complete ✓');
-    } catch(e) { addT('system', 'Error: ' + e.message); }
-  });
+socket.on('chat-message', ({text, role}) => {
+  addT(role, text);
+});
 
-  socket.on('ice-candidate', async ({ candidate }) => {
-    if (pc && candidate) {
-      try { await pc.addIceCandidate(new RTCIceCandidate(candidate)); } catch(e) {}
-    }
-  });
+async function connectAudio(){
+  try{
+    localStream = await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+    pc = new RTCPeerConnection(iceConfig);
+    pc.onicecandidate = e => { if(e.candidate&&activeCustomerSocketId) socket.emit('ice-candidate',{target:activeCustomerSocketId,candidate:e.candidate}); };
+    pc.oniceconnectionstatechange = () => addT('system','Connection: '+pc.iceConnectionState);
+    pc.ontrack = e => { addT('system','Customer audio live ✓'); const a=document.getElementById('remoteAudio'); a.srcObject=e.streams[0]; a.play().catch(()=>{}); };
+    localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
+    document.getElementById('connectBtn').disabled=true;
+    document.getElementById('connectBtn').textContent='✓ Audio Ready';
+    addT('system','Mic connected — pick a lead from the queue');
+  } catch(e){ alert('Mic error: '+e.message); }
+}
 
-  async function connectAudio() {
-    try {
-      localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-      pc = new RTCPeerConnection(iceConfig);
+function pickupLead(customerSocketId){
+  socket.emit('pickup-lead', {customerSocketId});
+}
 
-      pc.onicecandidate = (e) => {
-        if (e.candidate) socket.emit('ice-candidate', { target: 'customer', candidate: e.candidate });
-      };
-
-      pc.oniceconnectionstatechange = () => {
-        const state = pc.iceConnectionState;
-        addT('system', 'Connection: ' + state);
-        if (state === 'failed') {
-          addT('system', '⚠ Connection failed — ask customer to click Join Call again.');
-        }
-      };
-
-      pc.ontrack = (e) => {
-        addT('system', 'Remote audio connected ✓');
-        const audio = document.getElementById('remoteAudio');
-        audio.srcObject = e.streams[0];
-        audio.play().catch(() => {});
-      };
-
-      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-
-      document.getElementById('connectBtn').disabled = true;
-      document.getElementById('connectBtn').textContent = '✓ Audio Connected';
-      document.getElementById('endBtn').disabled = false;
-      addT('system', 'Mic ready — ask customer to click Join Call');
-      socket.emit('agent-ready');
-    } catch(err) {
-      alert('Mic error: ' + err.message);
-    }
+function endCurrentCall(){
+  if(activeCustomerSocketId){
+    socket.emit('end-call', {customerSocketId: activeCustomerSocketId});
+    servedCount++;
+    document.getElementById('statServed').textContent = servedCount;
   }
+  activeCustomerSocketId = null;
+  clearInterval(timerInterval); callStart=null;
+  document.getElementById('statDuration').textContent='0:00';
+  document.getElementById('endBtn').disabled=true;
+  document.getElementById('msgInput').disabled=true;
+  document.getElementById('sendBtn').disabled=true;
+  document.getElementById('detailsSection').style.display='none';
+  updateCallUI('idle');
+  addT('system','Call ended — pick next lead from queue');
+}
 
-  function takeoverAsHuman() {
-    triggerHandoff('Agent manually took over');
-  }
+function sendMessage(){
+  const input=document.getElementById('msgInput');
+  const text=input.value.trim();
+  if(!text||!activeCustomerSocketId) return;
+  socket.emit('chat-message',{text,role:'human',target:activeCustomerSocketId,customerSocketId:activeCustomerSocketId});
+  addT('human',text);
+  input.value='';
+}
 
-  function triggerHandoff(reason) {
-    socket.emit('trigger-handoff', { reason });
-    document.getElementById('takeoverBtn').disabled = true;
-    ['t1','t2','t3','t4'].forEach(id => document.getElementById(id).disabled = true);
-  }
+document.getElementById('msgInput').addEventListener('keydown',e=>{ if(e.key==='Enter') sendMessage(); });
 
-  function endCall() { socket.emit('end-call'); cleanup(); }
+function renderQueue(queue){
+  const list=document.getElementById('queueList');
+  if(!queue.length){ list.innerHTML='<div class="queue-empty">No leads in queue</div>'; return; }
+  list.innerHTML=queue.map((item,i)=>{
+    const name=item.details?.name||'Unknown Customer';
+    const emp=item.details?.employment||'—';
+    const income=item.details?.income?'₹'+item.details.income:'—';
+    const wait=Math.floor((Date.now()-item.queuedAt)/1000);
+    const waitStr=wait<60?wait+'s':(Math.floor(wait/60)+'m '+wait%60+'s');
+    return `<div class="queue-item">
+      <div class="q-num">${item.position}</div>
+      <div class="q-info">
+        <div class="q-name">${name}</div>
+        <div class="q-meta">${emp} · ${income} · waiting ${waitStr}</div>
+      </div>
+      <button class="q-pickup" onclick="pickupLead('${item.socketId}')">Pick Up</button>
+    </div>`;
+  }).join('');
+}
 
-  function sendMessage() {
-    const input = document.getElementById('msgInput');
-    const text = input.value.trim();
-    if (!text) return;
-    socket.emit('chat-message', { text, role: callState === 'human-active' ? 'human' : 'ai' });
-    input.value = '';
-  }
+function showDetails(details){
+  document.getElementById('detailsSection').style.display='block';
+  document.getElementById('dName').textContent=details.name||'—';
+  document.getElementById('dPan').textContent=details.pan||'—';
+  document.getElementById('dDob').textContent=details.dob||'—';
+  document.getElementById('dEmp').textContent=details.employment||'—';
+  document.getElementById('dIncome').textContent=details.income?'₹'+details.income:'—';
+  document.getElementById('dPin').textContent=details.pincode||'—';
+}
 
-  document.getElementById('msgInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') sendMessage();
-  });
+function updateCallUI(state){
+  const bar=document.getElementById('callStatus');
+  const dot=document.getElementById('sdot');
+  const title=document.getElementById('callTitle');
+  const sub=document.getElementById('callSub');
+  const pill=document.getElementById('modePill');
+  bar.className='call-status '+(state==='human-active'?'human':'idle');
+  dot.className='sdot '+(state==='human-active'?'human':'');
+  if(state==='human-active'){ title.textContent='Human Agent Active'; sub.textContent='You are speaking with the customer'; pill.textContent='Human Mode'; pill.className='mode-pill human'; document.getElementById('statMode').textContent='Human'; }
+  else{ title.textContent='No active call'; sub.textContent='Pick a lead from the queue to begin'; pill.textContent='Idle'; pill.className='mode-pill idle'; document.getElementById('statMode').textContent='—'; }
+}
 
-  function cleanup() {
-    if (localStream) localStream.getTracks().forEach(t => t.stop());
-    if (pc) pc.close();
-    pc = null; localStream = null;
-    document.getElementById('connectBtn').disabled = false;
-    document.getElementById('connectBtn').innerHTML = '🎙 Connect My Audio';
-    document.getElementById('takeoverBtn').disabled = true;
-    document.getElementById('endBtn').disabled = true;
-    clearInterval(timerInterval); callStart = null;
-    updateCallUI('idle');
-  }
+function updateTimer(){
+  if(!callStart) return;
+  const s=Math.floor((Date.now()-callStart)/1000);
+  document.getElementById('statDuration').textContent=`${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
+}
 
-  function updateCallUI(state) {
-    const bar = document.getElementById('statusBar');
-    const dot = document.getElementById('statusDot');
-    const title = document.getElementById('statusTitle');
-    const sub = document.getElementById('statusSub');
-    const pill = document.getElementById('modePill');
-    const takeover = document.getElementById('takeoverBtn');
-
-    bar.className = 'status-bar ' + (state === 'ai-active' ? 'ai-active' : state === 'human-active' ? 'human-active' : 'idle');
-    dot.className = 'status-dot ' + (state === 'ai-active' ? 'ai' : state === 'human-active' ? 'human' : '');
-
-    if (state === 'ai-active') {
-      title.textContent = 'AI Agent Active';
-      sub.textContent = 'AI is handling the customer call';
-      pill.textContent = 'AI Mode'; pill.className = 'mode-pill ai';
-      takeover.disabled = false;
-      document.getElementById('statMode').textContent = 'AI';
-      ['t1','t2','t3','t4'].forEach(id => document.getElementById(id).disabled = false);
-    } else if (state === 'human-active') {
-      title.textContent = 'Human Agent Active';
-      sub.textContent = 'You are handling the customer call';
-      pill.textContent = 'Human Mode'; pill.className = 'mode-pill human';
-      document.getElementById('statMode').textContent = 'Human';
-    } else {
-      title.textContent = 'No active call';
-      sub.textContent = 'Waiting for customer to join...';
-      pill.textContent = 'Idle'; pill.className = 'mode-pill idle';
-      takeover.disabled = true;
-      document.getElementById('statMode').textContent = '—';
-    }
-  }
-
-  function updateTimer() {
-    if (!callStart) return;
-    const s = Math.floor((Date.now() - callStart) / 1000);
-    document.getElementById('statDuration').textContent = `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
-  }
-
-  function addT(role, text) {
-    const t = document.getElementById('transcript');
-    const wrap = document.createElement('div');
-    if (role === 'system') {
-      wrap.className = 't-system';
-      wrap.textContent = text;
-    } else {
-      wrap.className = 't-msg';
-      const labels = { ai: 'AI Agent', human: 'You', customer: 'Customer' };
-      wrap.innerHTML = `<div class="t-label ${role}">${labels[role] || role}</div><div class="t-text">${text}</div>`;
-    }
-    t.appendChild(wrap);
-    t.scrollTop = t.scrollHeight;
-  }
+function addT(role,text){
+  const t=document.getElementById('transcript');
+  const w=document.createElement('div');
+  if(role==='system'){ w.className='t-system'; w.textContent=text; }
+  else{ w.className='t-msg'; const labels={ai:'AI Agent',human:'You',customer:'Customer'}; w.innerHTML=`<div class="t-label ${role}">${labels[role]||role}</div><div class="t-text">${text}</div>`; }
+  t.appendChild(w); t.scrollTop=t.scrollHeight;
+}
 </script>
 </body>
 </html>

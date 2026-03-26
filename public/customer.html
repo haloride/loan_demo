@@ -7,383 +7,408 @@
   <script src="/socket.io/socket.io.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #f0f4f9;
-      --surface: #ffffff;
-      --border: #e2e8f0;
-      --text: #0f172a;
-      --text-secondary: #64748b;
-      --text-muted: #94a3b8;
-      --primary: #2563eb;
-      --primary-light: #eff6ff;
-      --green: #16a34a;
-      --green-light: #f0fdf4;
-      --green-border: #bbf7d0;
-      --red: #dc2626;
-      --red-border: #fecaca;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#f0f4f9;--surface:#fff;--border:#e2e8f0;
+      --text:#0f172a;--muted:#94a3b8;--secondary:#64748b;
+      --primary:#2563eb;--primary-light:#eff6ff;
+      --green:#16a34a;--green-light:#f0fdf4;--green-border:#bbf7d0;
+      --amber:#d97706;--amber-light:#fffbeb;--amber-border:#fde68a;
+      --red:#dc2626;--red-light:#fef2f2;--red-border:#fecaca;
     }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-      padding: 32px;
-      width: 100%;
-      max-width: 420px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    .logo { display: flex; align-items: center; gap: 10px; }
-    .logo-icon {
-      width: 38px; height: 38px;
-      background: var(--primary);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 17px;
-      box-shadow: 0 2px 8px rgba(37,99,235,0.3);
-    }
-    .logo-name { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
-    .logo-sub { font-size: 11px; color: var(--text-muted); }
-
-    /* Agent card */
-    .agent-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-      padding: 24px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      transition: all 0.4s;
-    }
-
-    .agent-card.ai { background: var(--primary-light); border-color: #bfdbfe; }
-    .agent-card.human { background: var(--green-light); border-color: var(--green-border); }
-
-    .avatar {
-      width: 72px; height: 72px;
-      border-radius: 50%;
-      background: white;
-      border: 2px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 30px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      transition: all 0.4s;
-    }
-
-    .avatar.ai { border-color: #93c5fd; box-shadow: 0 0 0 4px rgba(37,99,235,0.08); }
-    .avatar.human { border-color: #86efac; box-shadow: 0 0 0 4px rgba(22,163,74,0.08); }
-
-    .agent-name { font-size: 15px; font-weight: 600; }
-    .agent-desc { font-size: 13px; color: var(--text-secondary); text-align: center; }
-
-    .status-pill {
-      display: flex; align-items: center; gap: 6px;
-      padding: 5px 12px; border-radius: 20px;
-      font-size: 11px; font-weight: 600;
-      background: white; border: 1px solid var(--border);
-    }
-
-    .pill-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--text-muted);
-    }
-    .pill-dot.ai { background: var(--primary); animation: pulse 1.8s infinite; }
-    .pill-dot.human { background: var(--green); animation: pulse 1.8s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1;}50%{opacity:0.4;} }
-
-    /* Transcript */
-    .transcript {
-      background: #fafbfc;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
-      height: 160px;
-      overflow-y: auto;
-      font-size: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .transcript::-webkit-scrollbar { width: 3px; }
-    .transcript::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-    .t-msg { display: flex; flex-direction: column; gap: 1px; }
-    .t-label { font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
-    .t-label.ai { color: var(--primary); }
-    .t-label.human { color: var(--green); }
-    .t-text { font-size: 12px; color: var(--text); line-height: 1.5; }
-    .t-system { font-size: 11px; color: var(--text-muted); font-style: italic; text-align: center; }
-
-    /* Handoff notice */
-    .handoff-banner {
-      display: none;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 16px;
-      background: var(--green-light);
-      border: 1px solid var(--green-border);
-      border-radius: 10px;
-      font-size: 13px;
-      color: var(--green);
-      font-weight: 500;
-    }
-    .handoff-banner.visible { display: flex; }
-
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.06);padding:32px;width:100%;max-width:420px;display:flex;flex-direction:column;gap:22px}
+    .logo{display:flex;align-items:center;gap:10px}
+    .logo-icon{width:38px;height:38px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 2px 8px rgba(37,99,235,.3)}
+    .logo-name{font-size:16px;font-weight:700;letter-spacing:-.3px}
+    .logo-sub{font-size:11px;color:var(--muted)}
+    .agent-card{display:flex;flex-direction:column;align-items:center;gap:12px;padding:22px;border-radius:12px;border:1px solid var(--border);background:var(--bg);transition:all .4s}
+    .agent-card.ai{background:var(--primary-light);border-color:#bfdbfe}
+    .agent-card.human{background:var(--green-light);border-color:var(--green-border)}
+    .avatar{width:68px;height:68px;border-radius:50%;background:white;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:all .4s;position:relative}
+    .avatar.ai{border-color:#93c5fd;box-shadow:0 0 0 4px rgba(37,99,235,.08)}
+    .avatar.human{border-color:#86efac;box-shadow:0 0 0 4px rgba(22,163,74,.08)}
+    .avatar.speaking::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--primary);animation:ripple 1s infinite}
+    @keyframes ripple{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.3);opacity:0}}
+    .agent-name{font-size:15px;font-weight:600}
+    .agent-desc{font-size:12px;color:var(--secondary);text-align:center}
+    .status-pill{display:flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;background:white;border:1px solid var(--border)}
+    .pill-dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
+    .pill-dot.ai{background:var(--primary);animation:pulse 1.8s infinite}
+    .pill-dot.human{background:var(--green);animation:pulse 1.8s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .transcript{background:#fafbfc;border:1px solid var(--border);border-radius:10px;padding:12px;height:200px;overflow-y:auto;font-size:12px;display:flex;flex-direction:column;gap:8px}
+    .transcript::-webkit-scrollbar{width:3px}
+    .transcript::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+    .t-msg{display:flex;flex-direction:column;gap:2px}
+    .t-label{font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+    .t-label.ai{color:var(--primary)}
+    .t-label.human{color:var(--green)}
+    .t-label.customer{color:var(--amber)}
+    .t-text{font-size:12px;line-height:1.5}
+    .t-system{font-size:11px;color:var(--muted);font-style:italic;text-align:center;padding:2px 0}
+    /* Steps indicator */
+    .steps{display:flex;gap:6px;justify-content:center}
+    .step{width:28px;height:4px;border-radius:4px;background:var(--border);transition:all .3s}
+    .step.active{background:var(--primary)}
+    .step.done{background:var(--green)}
+    /* Queue waiting */
+    .queue-card{background:var(--amber-light);border:1px solid var(--amber-border);border-radius:10px;padding:16px;text-align:center;display:none}
+    .queue-card.visible{display:block}
+    .queue-num{font-size:28px;font-weight:700;color:var(--amber)}
+    .queue-label{font-size:12px;color:var(--amber);margin-top:4px}
+    /* Handoff */
+    .handoff-banner{display:none;align-items:center;gap:10px;padding:12px 16px;background:var(--green-light);border:1px solid var(--green-border);border-radius:10px;font-size:13px;color:var(--green);font-weight:500}
+    .handoff-banner.visible{display:flex}
     /* Buttons */
-    .btn-stack { display: flex; flex-direction: column; gap: 8px; }
-
-    button {
-      width: 100%; padding: 12px;
-      border-radius: 10px; border: none;
-      font-family: 'Inter', sans-serif;
-      font-size: 13px; font-weight: 500;
-      cursor: pointer; transition: all 0.15s;
-    }
-
-    .btn-primary {
-      background: var(--primary); color: white;
-      box-shadow: 0 1px 3px rgba(37,99,235,0.3);
-    }
-    .btn-primary:hover:not(:disabled) { background: #1d4ed8; transform: translateY(-1px); }
-    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
-
-    .btn-outline {
-      background: white; color: var(--red);
-      border: 1.5px solid var(--red-border);
-    }
-    .btn-outline:hover:not(:disabled) { background: #fef2f2; }
-    .btn-outline:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    /* Debug */
-    #debugLog {
-      font-family: monospace; font-size: 10px;
-      color: var(--text-muted); background: #fafbfc;
-      border: 1px solid var(--border); border-radius: 8px;
-      padding: 8px; max-height: 70px; overflow-y: auto;
-    }
-
-    audio { display: none; }
+    button{width:100%;padding:12px;border-radius:10px;border:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s}
+    .btn-primary{background:var(--primary);color:white;box-shadow:0 1px 3px rgba(37,99,235,.3)}
+    .btn-primary:hover:not(:disabled){background:#1d4ed8;transform:translateY(-1px)}
+    .btn-primary:disabled{opacity:.45;cursor:not-allowed}
+    .btn-outline{background:white;color:var(--red);border:1.5px solid var(--red-border)}
+    .btn-outline:disabled{opacity:.4;cursor:not-allowed}
+    .mic-btn{width:56px;height:56px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+    .mic-btn.listening{background:#fee2e2;border:2px solid var(--red);color:var(--red);animation:micpulse 1s infinite}
+    .mic-btn.idle-mic{background:var(--primary-light);border:2px solid #bfdbfe;color:var(--primary)}
+    @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.3)}50%{box-shadow:0 0 0 8px rgba(220,38,38,0)}}
+    .input-row{display:flex;gap:10px;align-items:center}
+    #debugLog{font-family:monospace;font-size:10px;color:var(--muted);background:#fafbfc;border:1px solid var(--border);border-radius:8px;padding:8px;max-height:60px;overflow-y:auto}
+    audio{display:none}
   </style>
 </head>
 <body>
-  <div class="card">
-
-    <div class="logo">
-      <div class="logo-icon">💰</div>
-      <div>
-        <div class="logo-name">LoanAssist</div>
-        <div class="logo-sub">AI-Powered Loan Service</div>
-      </div>
-    </div>
-
-    <div class="agent-card" id="agentCard">
-      <div class="avatar" id="avatar">🤖</div>
-      <div class="agent-name" id="agentName">AI Loan Assistant</div>
-      <div class="agent-desc" id="agentDesc">Ready to help with your loan application</div>
-      <div class="status-pill" id="statusPill">
-        <div class="pill-dot" id="pillDot"></div>
-        <span id="pillText">Waiting to connect</span>
-      </div>
-    </div>
-
-    <div class="transcript" id="transcript">
-      <div class="t-system">— Transcript will appear here —</div>
-    </div>
-
-    <div class="handoff-banner" id="handoffBanner">
-      🔄 Transferring to a human agent, please hold...
-    </div>
-
-    <div class="btn-stack">
-      <button class="btn-primary" id="joinBtn" onclick="joinCall()">Join Call</button>
-      <button class="btn-outline" id="endBtn" onclick="endCall()" disabled>End Call</button>
-    </div>
-
-    <div id="debugLog">Connecting...</div>
+<div class="card">
+  <div class="logo">
+    <div class="logo-icon">💰</div>
+    <div><div class="logo-name">LoanAssist</div><div class="logo-sub">AI-Powered Loan Service</div></div>
   </div>
 
-  <audio id="remoteAudio" autoplay playsinline></audio>
+  <div class="agent-card" id="agentCard">
+    <div class="avatar" id="avatar">🤖</div>
+    <div class="agent-name" id="agentName">AI Loan Assistant</div>
+    <div class="agent-desc" id="agentDesc">Ready to help with your loan application</div>
+    <div class="status-pill" id="statusPill">
+      <div class="pill-dot" id="pillDot"></div>
+      <span id="pillText">Tap Join Call to begin</span>
+    </div>
+  </div>
 
-  <script>
-    const socket = io();
-    let pc = null;
-    let localStream = null;
-    let iceConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+  <!-- Steps -->
+  <div class="steps" id="stepsRow" style="display:none">
+    <div class="step" id="s1" title="Intent"></div>
+    <div class="step" id="s2" title="Name"></div>
+    <div class="step" id="s3" title="PAN & DOB"></div>
+    <div class="step" id="s4" title="Employment"></div>
+    <div class="step" id="s5" title="Income & Address"></div>
+    <div class="step" id="s6" title="DS Engine"></div>
+  </div>
 
-    function log(msg) {
-      const d = document.getElementById('debugLog');
-      const line = document.createElement('div');
-      line.textContent = new Date().toLocaleTimeString('en',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'}) + ' ' + msg;
-      d.appendChild(line);
-      d.scrollTop = d.scrollHeight;
-    }
+  <div class="transcript" id="transcript">
+    <div class="t-system">— Transcript will appear here —</div>
+  </div>
 
-    fetch('/ice-config').then(r => r.json()).then(cfg => { iceConfig = cfg; log('ICE config ready ✓'); }).catch(() => log('STUN only'));
+  <!-- Mic input row (shown during AI call) -->
+  <div class="input-row" id="micRow" style="display:none">
+    <button class="mic-btn idle-mic" id="micBtn" onclick="toggleRecording()">🎤</button>
+    <span style="font-size:12px;color:var(--muted)" id="micHint">Tap mic to speak</span>
+  </div>
 
-    socket.emit('register-customer');
-    socket.on('call-state', ({ state }) => updateUI(state));
+  <!-- Queue waiting card -->
+  <div class="queue-card" id="queueCard">
+    <div class="queue-num" id="queueNum">#1</div>
+    <div class="queue-label">You're in the queue — a human agent will connect shortly</div>
+  </div>
 
-    socket.on('handoff-triggered', ({ reason }) => {
-      addT('system', `Handoff: ${reason}`);
-      const b = document.getElementById('handoffBanner');
-      b.classList.add('visible');
-      setTimeout(() => b.classList.remove('visible'), 6000);
-    });
+  <div class="handoff-banner" id="handoffBanner">
+    🔄 Connecting you to a human agent...
+  </div>
 
-    socket.on('call-ended', () => { addT('system', 'Call ended'); cleanup(); });
-    socket.on('chat-message', ({ text, role }) => addT(role, text));
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <button class="btn-primary" id="joinBtn" onclick="joinCall()">Join Call</button>
+    <button class="btn-outline" id="endBtn" onclick="endCall()" disabled>End Call</button>
+  </div>
 
-    socket.on('answer', async ({ sdp }) => {
-      log('Got answer ✓');
-      try { await pc.setRemoteDescription(new RTCSessionDescription(sdp)); }
-      catch(e) { log('Answer err: ' + e.message); }
-    });
+  <div id="debugLog">Ready.</div>
+</div>
 
-    socket.on('ice-candidate', async ({ candidate }) => {
-      if (pc && candidate) {
-        try { await pc.addIceCandidate(new RTCIceCandidate(candidate)); } catch(e) {}
+<audio id="remoteAudio" autoplay playsinline></audio>
+
+<script>
+const socket = io();
+let pc = null;
+let localStream = null;
+let iceConfig = { iceServers:[{urls:'stun:stun.l.google.com:19302'}] };
+let mediaRecorder = null;
+let isRecording = false;
+let conversationHistory = [];
+let collectedDetails = {};
+let currentStep = 0;
+let callPhase = 'idle'; // idle | ai | queued | human
+
+const STEPS = ['intent','name','pan_dob','employment','income_address','ds_engine'];
+
+function log(msg){ const d=document.getElementById('debugLog'); const l=document.createElement('div'); l.textContent=msg; d.appendChild(l); d.scrollTop=d.scrollHeight; }
+
+fetch('/ice-config').then(r=>r.json()).then(cfg=>{iceConfig=cfg;log('ICE ready ✓');}).catch(()=>log('STUN only'));
+
+socket.emit('register-customer');
+socket.on('call-state',({state})=>updateUI(state));
+socket.on('queued',({position})=>{ document.getElementById('queueNum').textContent='#'+position; document.getElementById('queueCard').classList.add('visible'); addT('system','You are #'+position+' in queue'); });
+socket.on('handoff-triggered',({reason})=>{ addT('system','Connecting to human agent...'); document.getElementById('handoffBanner').classList.add('visible'); setTimeout(()=>document.getElementById('handoffBanner').classList.remove('visible'),5000); });
+socket.on('call-ended',()=>{ addT('system','Call ended'); cleanup(); });
+socket.on('chat-message',({text,role})=>addT(role,text));
+socket.on('answer',async({sdp})=>{ try{ await pc.setRemoteDescription(new RTCSessionDescription(sdp)); }catch(e){} });
+socket.on('ice-candidate',async({candidate})=>{ if(pc&&candidate){ try{await pc.addIceCandidate(new RTCIceCandidate(candidate));}catch(e){} } });
+socket.on('agent-ready',async()=>{ log('Agent ready'); if(pc&&localStream) await sendOffer(); });
+
+async function joinCall(){
+  try{
+    log('Getting mic...');
+    localStream = await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+    pc = new RTCPeerConnection(iceConfig);
+    pc.onicecandidate=e=>{ if(e.candidate) socket.emit('ice-candidate',{target:'agent',candidate:e.candidate}); };
+    pc.oniceconnectionstatechange=()=>{
+      log('ICE: '+pc.iceConnectionState);
+      if(pc.iceConnectionState==='disconnected'){
+        setTimeout(async()=>{ if(pc&&pc.iceConnectionState==='disconnected'){ const o=await pc.createOffer({iceRestart:true}); await pc.setLocalDescription(o); socket.emit('offer',{target:'agent',sdp:pc.localDescription}); }},2000);
       }
+    };
+    pc.ontrack=e=>{ log('Remote audio ✓'); const a=document.getElementById('remoteAudio'); a.srcObject=e.streams[0]; a.play().catch(()=>{}); };
+    localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
+    document.getElementById('joinBtn').disabled=true;
+    document.getElementById('endBtn').disabled=false;
+    socket.emit('start-call');
+    await sendOffer();
+    // Start AI conversation
+    callPhase='ai';
+    document.getElementById('stepsRow').style.display='flex';
+    document.getElementById('micRow').style.display='flex';
+    updateUI('ai-active');
+    // AI greets customer
+    await aiSpeak("Namaste! Main aapka AI Loan Assistant hoon. Kya aap ek used car loan ke baare mein jaankari lena chahte hain? Are you interested in a used car loan today?");
+    addT('ai',"Namaste! Main aapka AI Loan Assistant hoon. Kya aap ek used car loan ke baare mein jaankari lena chahte hain? Are you interested in a used car loan today?");
+    setStep(0,'active');
+  } catch(err){ log('Error: '+err.message); alert('Mic needed: '+err.message); }
+}
+
+async function sendOffer(){
+  const o=await pc.createOffer({offerToReceiveAudio:true});
+  await pc.setLocalDescription(o);
+  socket.emit('offer',{target:'agent',sdp:pc.localDescription});
+}
+
+// ---- AI Voice Flow ----
+async function toggleRecording(){
+  if(isRecording){ stopRecording(); return; }
+  startRecording();
+}
+
+function startRecording(){
+  if(!localStream) return;
+  const chunks=[];
+  mediaRecorder=new MediaRecorder(localStream,{mimeType:'audio/webm'});
+  mediaRecorder.ondataavailable=e=>chunks.push(e.data);
+  mediaRecorder.onstop=async()=>{
+    const blob=new Blob(chunks,{type:'audio/webm'});
+    await processCustomerSpeech(blob);
+  };
+  mediaRecorder.start();
+  isRecording=true;
+  document.getElementById('micBtn').className='mic-btn listening';
+  document.getElementById('micBtn').textContent='⏹';
+  document.getElementById('micHint').textContent='Recording... tap to stop';
+  document.getElementById('avatar').classList.add('speaking');
+}
+
+function stopRecording(){
+  if(mediaRecorder&&mediaRecorder.state!=='inactive') mediaRecorder.stop();
+  isRecording=false;
+  document.getElementById('micBtn').className='mic-btn idle-mic';
+  document.getElementById('micBtn').textContent='🎤';
+  document.getElementById('micHint').textContent='Processing...';
+  document.getElementById('avatar').classList.remove('speaking');
+}
+
+async function processCustomerSpeech(audioBlob){
+  try{
+    // Transcribe with Whisper
+    const formData=new FormData();
+    formData.append('file',audioBlob,'audio.webm');
+    formData.append('model','whisper-1');
+    formData.append('language','hi'); // supports Hindi + English
+    const resp=await fetch('/api/transcribe',{method:'POST',body:formData});
+    const {text}=await resp.json();
+    if(!text||text.trim()===''){
+      document.getElementById('micHint').textContent='Tap mic to speak';
+      return;
+    }
+    log('Customer said: '+text);
+    addT('customer',text);
+    conversationHistory.push({role:'user',content:text});
+    await getAIResponse(text);
+  } catch(e){ log('Transcribe error: '+e.message); document.getElementById('micHint').textContent='Tap mic to speak'; }
+}
+
+async function getAIResponse(userText){
+  try{
+    document.getElementById('micHint').textContent='AI is thinking...';
+    document.getElementById('micBtn').disabled=true;
+
+    const systemPrompt = `You are a friendly bilingual (Hindi + English) AI loan assistant for LoanAssist, helping customers apply for used car loans. 
+You speak in a mix of Hindi and English (Hinglish) to make customers comfortable.
+Be warm, professional, and concise. Ask one question at a time.
+
+Your job is to collect these details in order:
+1. INTENT - Check if customer is interested in a used car loan
+2. FULL NAME - Ask for their complete name  
+3. PAN NUMBER & DATE OF BIRTH - Ask for PAN (format: ABCDE1234F) and DOB (DD/MM/YYYY)
+4. GENDER - Male/Female/Other
+5. EMPLOYMENT TYPE - Salaried or Self-Employed
+6. MONTHLY INCOME - In rupees
+7. PINCODE - Their area pincode
+8. FULL ADDRESS - Complete residential address
+
+Currently collected: ${JSON.stringify(collectedDetails)}
+
+When you have collected ALL details (name, pan, dob, gender, employment, income, pincode, address), say exactly: "DETAILS_COMPLETE" followed by a friendly message saying you're processing their application.
+
+If customer says they're NOT interested, say exactly: "NOT_INTERESTED" followed by a polite goodbye.
+
+Always acknowledge what the customer said before asking the next question.
+Keep responses under 50 words. Be conversational.`;
+
+    const resp=await fetch('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'gpt-4o-mini',
+        max_tokens:150,
+        messages:[{role:'system',content:systemPrompt},...conversationHistory]
+      })
     });
+    const data=await resp.json();
+    const aiText=data.choices?.[0]?.message?.content||'Sorry, please repeat that.';
+    conversationHistory.push({role:'assistant',content:aiText});
 
-    socket.on('agent-ready', async () => {
-      log('Agent ready — resending offer');
-      if (pc && localStream) await sendOffer();
-    });
+    // Extract collected details from conversation
+    extractDetails(userText, aiText);
 
-    async function joinCall() {
-      try {
-        log('Requesting mic...');
-        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-        log('Mic granted ✓');
-
-        pc = new RTCPeerConnection(iceConfig);
-
-        pc.onicecandidate = e => {
-          if (e.candidate) socket.emit('ice-candidate', { target: 'agent', candidate: e.candidate });
-        };
-
-        pc.oniceconnectionstatechange = () => {
-          const state = pc.iceConnectionState;
-          log('ICE: ' + state);
-          if (state === 'disconnected') {
-            log('Disconnected — attempting ICE restart...');
-            setTimeout(async () => {
-              if (pc && pc.iceConnectionState === 'disconnected') {
-                try {
-                  const offer = await pc.createOffer({ iceRestart: true });
-                  await pc.setLocalDescription(offer);
-                  socket.emit('offer', { target: 'agent', sdp: pc.localDescription });
-                  log('ICE restart offer sent');
-                } catch(e) { log('ICE restart failed: ' + e.message); }
-              }
-            }, 2000);
-          }
-          if (state === 'failed') {
-            log('Connection failed — rejoining...');
-            cleanup();
-          }
-        };
-        pc.onconnectionstatechange = () => log('Conn: ' + pc.connectionState);
-
-        pc.ontrack = e => {
-          log('Remote audio ✓');
-          const a = document.getElementById('remoteAudio');
-          a.srcObject = e.streams[0];
-          a.play().catch(err => log('Play blocked: ' + err.message));
-        };
-
-        localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-
-        document.getElementById('joinBtn').disabled = true;
-        document.getElementById('endBtn').disabled = false;
-        addT('system', 'You joined the call');
-        socket.emit('start-call');
-        await sendOffer();
-      } catch(err) {
-        log('Error: ' + err.message);
-        alert('Mic access needed: ' + err.message);
-      }
+    // Check for special signals
+    if(aiText.includes('DETAILS_COMPLETE')){
+      const cleanMsg=aiText.replace('DETAILS_COMPLETE','').trim();
+      addT('ai',cleanMsg);
+      await aiSpeak(cleanMsg);
+      await runDSEngine();
+      return;
+    }
+    if(aiText.includes('NOT_INTERESTED')){
+      const cleanMsg=aiText.replace('NOT_INTERESTED','').trim();
+      addT('ai',cleanMsg);
+      await aiSpeak(cleanMsg);
+      setTimeout(()=>endCall(),3000);
+      return;
     }
 
-    async function sendOffer() {
-      log('Sending offer...');
-      const offer = await pc.createOffer({ offerToReceiveAudio: true });
-      await pc.setLocalDescription(offer);
-      socket.emit('offer', { target: 'agent', sdp: pc.localDescription });
-      log('Offer sent ✓');
+    addT('ai',aiText);
+    await aiSpeak(aiText);
+    document.getElementById('micHint').textContent='Tap mic to speak';
+    document.getElementById('micBtn').disabled=false;
+  } catch(e){ log('AI error: '+e.message); document.getElementById('micHint').textContent='Tap mic to speak'; document.getElementById('micBtn').disabled=false; }
+}
+
+function extractDetails(userText, aiText){
+  const text=userText.toLowerCase();
+  // Simple extraction — in production this would be more robust
+  if(!collectedDetails.intent && (text.includes('yes')||text.includes('haan')||text.includes('interested')||text.includes('chahiye'))) { collectedDetails.intent='Yes'; setStep(0,'done'); setStep(1,'active'); }
+  const panMatch=userText.match(/[A-Z]{5}[0-9]{4}[A-Z]/i); if(panMatch) { collectedDetails.pan=panMatch[0].toUpperCase(); setStep(2,'done'); }
+  const dobMatch=userText.match(/\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}/); if(dobMatch) { collectedDetails.dob=dobMatch[0]; }
+  if(!collectedDetails.employment && (text.includes('salaried')||text.includes('salary')||text.includes('job')||text.includes('naukri'))) { collectedDetails.employment='Salaried'; setStep(3,'done'); setStep(4,'active'); }
+  if(!collectedDetails.employment && (text.includes('self')||text.includes('business')||text.includes('own'))) { collectedDetails.employment='Self-Employed'; setStep(3,'done'); setStep(4,'active'); }
+  const incomeMatch=userText.match(/\d[\d,]+/); if(incomeMatch&&!collectedDetails.income&&(text.includes('lakh')||text.includes('k')||text.includes('thousand')||parseInt(incomeMatch[0].replace(/,/g,''))>5000)) { collectedDetails.income=incomeMatch[0]; }
+  const pincodeMatch=userText.match(/\b[1-9][0-9]{5}\b/); if(pincodeMatch) { collectedDetails.pincode=pincodeMatch[0]; }
+  socket.emit('details-collected', collectedDetails);
+}
+
+async function runDSEngine(){
+  setStep(5,'active');
+  addT('system','Running DS engine...');
+  try{
+    const resp=await fetch('/api/ds-engine',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({details:collectedDetails})});
+    const {channel}=await resp.json();
+    setStep(5,'done');
+    if(channel==='AMBER'){
+      const msg="Aapki application process ho rahi hai. Verification ke liye aapko apni bank statement PDF upload karni hogi. Ek human agent aapse connect karenge — please thoda wait karein.";
+      addT('ai',msg);
+      await aiSpeak(msg);
+      socket.emit('add-to-queue',{details:collectedDetails});
+      callPhase='queued';
+      document.getElementById('micRow').style.display='none';
+    } else if(channel==='GREEN'){
+      const msg="Great news! Aapki application approve ho gayi hai. Aapka case log kar diya gaya hai. Bahut shukriya!";
+      addT('ai',msg); await aiSpeak(msg); setTimeout(()=>endCall(),4000);
+    } else {
+      const msg="I'm sorry, we are unable to process your application at this time. Thank you for your interest.";
+      addT('ai',msg); await aiSpeak(msg); setTimeout(()=>endCall(),4000);
     }
+  } catch(e){ log('DS error: '+e.message); }
+}
 
-    function endCall() { socket.emit('end-call'); cleanup(); }
+function aiSpeak(text){
+  return new Promise(resolve=>{
+    document.getElementById('avatar').classList.add('speaking');
+    const utter=new SpeechSynthesisUtterance(text);
+    utter.lang='hi-IN';
+    utter.rate=0.95;
+    utter.pitch=1;
+    utter.onend=()=>{ document.getElementById('avatar').classList.remove('speaking'); resolve(); };
+    utter.onerror=()=>{ document.getElementById('avatar').classList.remove('speaking'); resolve(); };
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utter);
+  });
+}
 
-    function cleanup() {
-      if (localStream) localStream.getTracks().forEach(t => t.stop());
-      if (pc) pc.close();
-      pc = null; localStream = null;
-      document.getElementById('joinBtn').disabled = false;
-      document.getElementById('endBtn').disabled = true;
-      updateUI('idle');
-    }
+function setStep(idx, state){
+  const el=document.getElementById('s'+(idx+1));
+  if(el) el.className='step '+state;
+}
 
-    function updateUI(state) {
-      const card = document.getElementById('agentCard');
-      const avatar = document.getElementById('avatar');
-      const agentName = document.getElementById('agentName');
-      const agentDesc = document.getElementById('agentDesc');
-      const dot = document.getElementById('pillDot');
-      const pillText = document.getElementById('pillText');
+function updateUI(state){
+  const card=document.getElementById('agentCard');
+  const avatar=document.getElementById('avatar');
+  const name=document.getElementById('agentName');
+  const desc=document.getElementById('agentDesc');
+  const dot=document.getElementById('pillDot');
+  const pillText=document.getElementById('pillText');
+  if(state==='ai-active'){ card.className='agent-card ai'; avatar.className='avatar ai'; avatar.textContent='🤖'; name.textContent='AI Loan Assistant'; desc.textContent='Collecting your details'; dot.className='pill-dot ai'; pillText.textContent='AI Agent Active'; }
+  else if(state==='human-active'){ card.className='agent-card human'; avatar.className='avatar human'; avatar.textContent='👤'; name.textContent='Human Agent'; desc.textContent='A specialist is assisting you'; dot.className='pill-dot human'; pillText.textContent='Human Agent Connected'; document.getElementById('queueCard').classList.remove('visible'); }
+  else{ card.className='agent-card'; avatar.className='avatar'; avatar.textContent='🤖'; name.textContent='AI Loan Assistant'; desc.textContent='Ready to help with your loan application'; dot.className='pill-dot'; pillText.textContent='Tap Join Call to begin'; }
+}
 
-      if (state === 'ai-active') {
-        card.className = 'agent-card ai';
-        avatar.className = 'avatar ai'; avatar.textContent = '🤖';
-        agentName.textContent = 'AI Loan Assistant';
-        agentDesc.textContent = 'Processing your loan application';
-        dot.className = 'pill-dot ai'; pillText.textContent = 'Connected to AI Agent';
-      } else if (state === 'human-active') {
-        card.className = 'agent-card human';
-        avatar.className = 'avatar human'; avatar.textContent = '👤';
-        agentName.textContent = 'Human Loan Advisor';
-        agentDesc.textContent = 'A specialist is now assisting you';
-        dot.className = 'pill-dot human'; pillText.textContent = 'Connected to Human Agent';
-      } else {
-        card.className = 'agent-card';
-        avatar.className = 'avatar'; avatar.textContent = '🤖';
-        agentName.textContent = 'AI Loan Assistant';
-        agentDesc.textContent = 'Ready to help with your loan application';
-        dot.className = 'pill-dot'; pillText.textContent = 'Waiting to connect';
-      }
-    }
+function endCall(){ socket.emit('end-call',{}); cleanup(); }
 
-    function addT(role, text) {
-      const t = document.getElementById('transcript');
-      const wrap = document.createElement('div');
-      if (role === 'system') {
-        wrap.className = 't-system'; wrap.textContent = text;
-      } else {
-        wrap.className = 't-msg';
-        const labels = { ai: 'AI Agent', human: 'Human Agent', customer: 'You' };
-        wrap.innerHTML = `<div class="t-label ${role}">${labels[role]||role}</div><div class="t-text">${text}</div>`;
-      }
-      t.appendChild(wrap); t.scrollTop = t.scrollHeight;
-    }
-  </script>
+function cleanup(){
+  speechSynthesis.cancel();
+  if(mediaRecorder&&mediaRecorder.state!=='inactive') mediaRecorder.stop();
+  if(localStream) localStream.getTracks().forEach(t=>t.stop());
+  if(pc) pc.close();
+  pc=null; localStream=null; isRecording=false; callPhase='idle';
+  conversationHistory=[]; collectedDetails={}; currentStep=0;
+  document.getElementById('joinBtn').disabled=false;
+  document.getElementById('endBtn').disabled=true;
+  document.getElementById('micRow').style.display='none';
+  document.getElementById('stepsRow').style.display='none';
+  document.getElementById('queueCard').classList.remove('visible');
+  ['s1','s2','s3','s4','s5','s6'].forEach(id=>{ const el=document.getElementById(id); if(el) el.className='step'; });
+  updateUI('idle');
+}
+
+function addT(role,text){
+  const t=document.getElementById('transcript');
+  const w=document.createElement('div');
+  if(role==='system'){ w.className='t-system'; w.textContent=text; }
+  else{ w.className='t-msg'; const labels={ai:'AI Agent',human:'Human Agent',customer:'You'}; w.innerHTML=`<div class="t-label ${role}">${labels[role]||role}</div><div class="t-text">${text}</div>`; }
+  t.appendChild(w); t.scrollTop=t.scrollHeight;
+}
+</script>
 </body>
 </html>
