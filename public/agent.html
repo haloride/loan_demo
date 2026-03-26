@@ -1,564 +1,626 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>LoanAssist – Agent Dashboard</title>
   <script src="/socket.io/socket.io.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0d1117;
-      --surface: #161b22;
-      --surface2: #1c2128;
-      --border: #30363d;
-      --text: #e6edf3;
-      --muted: #8b949e;
-      --accent: #58a6ff;
-      --green: #3fb950;
-      --orange: #d29922;
-      --red: #f85149;
-      --ai-color: #58a6ff;
-      --human-color: #3fb950;
+      --bg: #f0f4f9;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --border-light: #f1f5f9;
+      --text: #0f172a;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --green: #16a34a;
+      --green-light: #f0fdf4;
+      --green-border: #bbf7d0;
+      --orange: #d97706;
+      --orange-light: #fffbeb;
+      --orange-border: #fde68a;
+      --red: #dc2626;
+      --red-light: #fef2f2;
+      --red-border: #fecaca;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04);
+      --radius: 12px;
+      --radius-sm: 8px;
     }
 
     body {
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding: 24px;
+      padding: 20px;
     }
 
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 28px;
+      margin-bottom: 20px;
+      padding: 0 2px;
     }
 
-    .logo { display: flex; align-items: center; gap: 12px; }
-    .logo-icon {
-      width: 36px; height: 36px;
-      background: linear-gradient(135deg, #1f6feb, #388bfd);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
-    }
-    .logo-text { font-size: 16px; font-weight: 600; }
-    .logo-sub { font-size: 11px; color: var(--muted); }
-
-    .header-badge {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 6px;
-      background: rgba(210,153,34,0.15);
-      color: var(--orange);
-      border: 1px solid rgba(210,153,34,0.3);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: 20px;
-    }
-
-    .panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px;
-    }
-
-    .panel-title {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 18px;
-    }
-
-    /* Call Status */
-    .call-status {
+    .logo {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 16px;
-      background: var(--surface2);
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
-
-    .big-dot {
-      width: 14px; height: 14px;
-      border-radius: 50%;
-      background: var(--muted);
-      flex-shrink: 0;
-      transition: all 0.3s;
-    }
-
-    .big-dot.ai { background: var(--ai-color); animation: pulse 1.5s infinite; }
-    .big-dot.human { background: var(--human-color); animation: pulse 1.5s infinite; }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; box-shadow: none; }
-      50% { opacity: 0.6; }
-    }
-
-    .call-info { flex: 1; }
-    .call-info-title { font-size: 14px; font-weight: 500; }
-    .call-info-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
-
-    .mode-badge {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 6px;
-      border: 1px solid transparent;
-    }
-
-    .mode-badge.idle { background: rgba(139,148,158,0.15); color: var(--muted); border-color: var(--border); }
-    .mode-badge.ai { background: rgba(88,166,255,0.15); color: var(--ai-color); border-color: rgba(88,166,255,0.3); }
-    .mode-badge.human { background: rgba(63,185,80,0.15); color: var(--human-color); border-color: rgba(63,185,80,0.3); }
-
-    /* Transcript */
-    .transcript {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px;
-      height: 260px;
-      overflow-y: auto;
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .t-line { line-height: 1.5; }
-    .t-line .spk { font-weight: 500; margin-right: 6px; }
-    .t-line.ai .spk { color: var(--ai-color); }
-    .t-line.human .spk { color: var(--human-color); }
-    .t-line.customer .spk { color: var(--orange); }
-    .t-line.system { color: var(--muted); font-style: italic; }
-
-    /* Chat input */
-    .chat-area {
-      margin-top: 16px;
-      display: flex;
       gap: 10px;
     }
 
-    .chat-area input {
-      flex: 1;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      outline: none;
-      transition: border-color 0.2s;
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: var(--primary);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.3);
     }
 
-    .chat-area input:focus { border-color: var(--accent); }
-    .chat-area input::placeholder { color: var(--muted); }
+    .logo-name { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+    .logo-sub { font-size: 11px; color: var(--text-muted); font-weight: 400; }
 
-    .chat-area button {
+    .header-badge {
+      font-size: 11px; font-weight: 600;
+      padding: 5px 12px; border-radius: 20px;
+      background: var(--primary-light); color: var(--primary);
+      border: 1px solid #bfdbfe;
+      letter-spacing: 0.03em;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 16px;
+      max-width: 1200px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .card-header {
+      padding: 16px 20px 0;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .card-body { padding: 16px 20px 20px; }
+
+    /* Status bar */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg);
+      margin-bottom: 16px;
+      transition: all 0.3s;
+    }
+
+    .status-bar.ai-active { background: #eff6ff; border-color: #bfdbfe; }
+    .status-bar.human-active { background: var(--green-light); border-color: var(--green-border); }
+
+    .status-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: var(--text-muted); flex-shrink: 0;
+    }
+    .status-dot.ai { background: var(--primary); animation: pulse 1.8s infinite; }
+    .status-dot.human { background: var(--green); animation: pulse 1.8s infinite; }
+
+    @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(0.85); } }
+
+    .status-info { flex: 1; }
+    .status-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .status-sub { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
+
+    .mode-pill {
+      font-size: 11px; font-weight: 600;
+      padding: 4px 10px; border-radius: 20px;
+    }
+    .mode-pill.idle { background: #f1f5f9; color: var(--text-secondary); }
+    .mode-pill.ai { background: var(--primary-light); color: var(--primary); }
+    .mode-pill.human { background: var(--green-light); color: var(--green); }
+
+    /* Transcript */
+    .transcript {
+      background: #fafbfc;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      height: 280px;
+      overflow-y: auto;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .transcript::-webkit-scrollbar { width: 4px; }
+    .transcript::-webkit-scrollbar-track { background: transparent; }
+    .transcript::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .t-msg { display: flex; flex-direction: column; gap: 2px; }
+    .t-label { font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+    .t-label.ai { color: var(--primary); }
+    .t-label.human { color: var(--green); }
+    .t-label.customer { color: var(--orange); }
+    .t-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+    .t-system { font-size: 11px; color: var(--text-muted); font-style: italic; text-align: center; padding: 2px 0; }
+
+    /* Chat input */
+    .chat-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--text);
+      background: var(--surface);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .chat-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+
+    .chat-input::placeholder { color: var(--text-muted); }
+
+    .send-btn {
       padding: 10px 18px;
-      background: linear-gradient(135deg, #1f6feb, #388bfd);
+      background: var(--primary);
       color: white;
       border: none;
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
+      border-radius: var(--radius-sm);
+      font-family: 'Inter', sans-serif;
       font-size: 13px;
       font-weight: 500;
       cursor: pointer;
-      transition: opacity 0.2s;
+      transition: background 0.2s;
+      white-space: nowrap;
     }
 
-    .chat-area button:hover { opacity: 0.85; }
+    .send-btn:hover { background: var(--primary-hover); }
 
-    /* Right panel */
-    .right-col { display: flex; flex-direction: column; gap: 20px; }
+    /* Right column */
+    .right-col { display: flex; flex-direction: column; gap: 16px; }
 
-    /* Handoff triggers */
-    .trigger-list { display: flex; flex-direction: column; gap: 10px; }
+    /* Buttons */
+    .btn-stack { display: flex; flex-direction: column; gap: 8px; }
+
+    .btn {
+      width: 100%;
+      padding: 11px 16px;
+      border-radius: var(--radius-sm);
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+
+    .btn-primary {
+      background: var(--primary); color: white;
+      box-shadow: 0 1px 3px rgba(37,99,235,0.3);
+    }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 3px 8px rgba(37,99,235,0.3); }
+
+    .btn-green {
+      background: var(--green); color: white;
+      box-shadow: 0 1px 3px rgba(22,163,74,0.3);
+    }
+    .btn-green:hover:not(:disabled) { background: #15803d; transform: translateY(-1px); }
+
+    .btn-red {
+      background: white; color: var(--red);
+      border: 1.5px solid var(--red-border);
+    }
+    .btn-red:hover:not(:disabled) { background: var(--red-light); }
+
+    /* Trigger buttons */
+    .trigger-list { display: flex; flex-direction: column; gap: 6px; }
 
     .trigger-btn {
       width: 100%;
-      padding: 12px 16px;
-      background: var(--surface2);
+      padding: 10px 14px;
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
+      border-radius: var(--radius-sm);
       cursor: pointer;
       text-align: left;
       display: flex;
       align-items: center;
       gap: 10px;
-      transition: all 0.2s;
+      transition: all 0.15s;
+      font-family: 'Inter', sans-serif;
     }
 
     .trigger-btn:hover:not(:disabled) {
-      border-color: var(--orange);
-      background: rgba(210,153,34,0.08);
+      border-color: #fbbf24;
+      background: var(--orange-light);
+      transform: translateX(2px);
     }
 
     .trigger-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    .trigger-icon { font-size: 16px; }
-    .trigger-text { flex: 1; }
-    .trigger-label { font-size: 11px; color: var(--muted); font-weight: 400; display: block; margin-top: 1px; }
-
-    /* Action buttons */
-    .action-btns { display: flex; flex-direction: column; gap: 10px; }
-
-    .btn {
-      width: 100%;
-      padding: 13px;
-      border-radius: 10px;
-      border: none;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
+    .trigger-icon {
+      width: 30px; height: 30px;
+      background: var(--bg);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; flex-shrink: 0;
     }
 
-    .btn-primary { background: linear-gradient(135deg, #1f6feb, #388bfd); color: white; }
-    .btn-primary:hover:not(:disabled) { opacity: 0.9; }
-    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    .btn-green { background: rgba(63,185,80,0.15); color: var(--green); border: 1px solid rgba(63,185,80,0.3); }
-    .btn-green:hover:not(:disabled) { background: rgba(63,185,80,0.25); }
-    .btn-green:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    .btn-danger { background: rgba(248,81,73,0.12); color: var(--red); border: 1px solid rgba(248,81,73,0.25); }
-    .btn-danger:hover:not(:disabled) { background: rgba(248,81,73,0.22); }
-    .btn-danger:disabled { opacity: 0.4; cursor: not-allowed; }
+    .trigger-text-wrap { flex: 1; }
+    .trigger-name { font-size: 12px; font-weight: 500; color: var(--text); }
+    .trigger-desc { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
 
     /* Stats */
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
     .stat-box {
-      background: var(--surface2);
+      background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
     }
 
-    .stat-value { font-size: 22px; font-weight: 600; font-family: 'DM Mono', monospace; }
-    .stat-label { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .stat-val { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
+    .stat-lbl { font-size: 11px; color: var(--text-muted); font-weight: 400; }
 
     audio { display: none; }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo">
-      <div class="logo-icon">💰</div>
-      <div>
-        <div class="logo-text">LoanAssist</div>
-        <div class="logo-sub">Agent Dashboard</div>
-      </div>
-    </div>
-    <div class="header-badge">Agent View</div>
-  </header>
 
-  <div class="grid">
-    <!-- Left: Main Panel -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">💰</div>
     <div>
-      <div class="panel">
-        <div class="call-status">
-          <div class="big-dot idle" id="bigDot"></div>
-          <div class="call-info">
-            <div class="call-info-title" id="callTitle">No active call</div>
-            <div class="call-info-sub" id="callSub">Waiting for customer to join...</div>
-          </div>
-          <div class="mode-badge idle" id="modeBadge">Idle</div>
-        </div>
-
-        <div class="panel-title">Live Transcript</div>
-        <div class="transcript" id="transcript">
-          <div class="t-line system"><span>— Transcript will appear when call starts —</span></div>
-        </div>
-
-        <div class="chat-area">
-          <input type="text" id="msgInput" placeholder="Type a message as agent (visible in transcript)..." />
-          <button onclick="sendMessage()">Send</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Right: Controls -->
-    <div class="right-col">
-
-      <!-- Call Controls -->
-      <div class="panel">
-        <div class="panel-title">Call Controls</div>
-        <div class="action-btns">
-          <button class="btn btn-primary" id="connectBtn" onclick="connectAudio()">🎙 Connect My Audio</button>
-          <button class="btn btn-green" id="takeoverBtn" onclick="takeoverAsHuman()" disabled>👤 Take Over as Human Agent</button>
-          <button class="btn btn-danger" id="endBtn" onclick="endCall()" disabled>✕ End Call</button>
-        </div>
-      </div>
-
-      <!-- Handoff Triggers -->
-      <div class="panel">
-        <div class="panel-title">Trigger Handoff Scenarios</div>
-        <div class="trigger-list">
-          <button class="trigger-btn" onclick="triggerHandoff('Language barrier detected')" id="t1">
-            <span class="trigger-icon">🌐</span>
-            <span class="trigger-text">
-              Language Barrier
-              <span class="trigger-label">Customer using unsupported dialect</span>
-            </span>
-          </button>
-          <button class="trigger-btn" onclick="triggerHandoff('Customer requested file upload')" id="t2">
-            <span class="trigger-icon">📎</span>
-            <span class="trigger-text">
-              File Upload Requested
-              <span class="trigger-label">Customer needs to send documents</span>
-            </span>
-          </button>
-          <button class="trigger-btn" onclick="triggerHandoff('Complex query beyond AI scope')" id="t3">
-            <span class="trigger-icon">🧠</span>
-            <span class="trigger-text">
-              Complex Query
-              <span class="trigger-label">Question outside AI capabilities</span>
-            </span>
-          </button>
-          <button class="trigger-btn" onclick="triggerHandoff('Customer requested human agent')" id="t4">
-            <span class="trigger-icon">🙋</span>
-            <span class="trigger-text">
-              Customer Request
-              <span class="trigger-label">Explicitly asked for human</span>
-            </span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Stats -->
-      <div class="panel">
-        <div class="panel-title">Session Stats</div>
-        <div class="stats-grid">
-          <div class="stat-box">
-            <div class="stat-value" id="statDuration">0:00</div>
-            <div class="stat-label">Duration</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-value" id="statHandoffs">0</div>
-            <div class="stat-label">Handoffs</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-value" id="statMode">—</div>
-            <div class="stat-label">Current Mode</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-value" id="statMessages">0</div>
-            <div class="stat-label">Messages</div>
-          </div>
-        </div>
-      </div>
-
+      <div class="logo-name">LoanAssist</div>
+      <div class="logo-sub">Agent Dashboard</div>
     </div>
   </div>
+  <div class="header-badge">AGENT VIEW</div>
+</header>
 
-  <audio id="remoteAudio" autoplay></audio>
+<div class="layout">
+  <!-- Left: Main -->
+  <div style="display:flex;flex-direction:column;gap:16px;">
 
-  <script>
-    const socket = io();
-    let pc = null;
-    let localStream = null;
-    let callState = 'idle';
-    let handoffCount = 0;
-    let messageCount = 0;
-    let callStart = null;
-    let timerInterval = null;
-    let iceServers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+    <div class="card">
+      <div class="card-body" style="padding-top:18px;">
 
-    // Fetch ICE config from server (includes TURN servers)
-    fetch('/ice-config').then(r => r.json()).then(config => { iceServers = config; }).catch(() => {});
+        <div class="status-bar idle" id="statusBar">
+          <div class="status-dot" id="statusDot"></div>
+          <div class="status-info">
+            <div class="status-title" id="statusTitle">No active call</div>
+            <div class="status-sub" id="statusSub">Waiting for customer to join...</div>
+          </div>
+          <div class="mode-pill idle" id="modePill">Idle</div>
+        </div>
 
-    socket.emit('register-agent');
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">Live Transcript</div>
 
-    socket.on('call-state', ({ state }) => {
-      callState = state;
-      updateCallUI(state);
-      if (state !== 'idle' && !callStart) {
-        callStart = Date.now();
-        timerInterval = setInterval(updateTimer, 1000);
-      }
-      if (state === 'idle') {
-        clearInterval(timerInterval);
-        callStart = null;
-        document.getElementById('statDuration').textContent = '0:00';
-      }
-    });
+        <div class="transcript" id="transcript">
+          <div class="t-system">— Transcript will appear when call starts —</div>
+        </div>
 
-    socket.on('handoff-triggered', ({ reason }) => {
-      handoffCount++;
-      document.getElementById('statHandoffs').textContent = handoffCount;
-      addTranscript('system', `⚡ Handoff triggered: ${reason}`);
-    });
+        <div class="chat-row">
+          <input class="chat-input" id="msgInput" placeholder="Type a message as agent (visible in transcript)..." />
+          <button class="send-btn" onclick="sendMessage()">Send</button>
+        </div>
 
-    socket.on('call-ended', () => {
-      addTranscript('system', '— Call ended —');
-      cleanup();
-    });
+      </div>
+    </div>
 
-    socket.on('chat-message', ({ text, role, from }) => {
-      addTranscript(role, text);
-      messageCount++;
-      document.getElementById('statMessages').textContent = messageCount;
-    });
+  </div>
 
-    // WebRTC
-    socket.on('answer', async ({ sdp }) => {
-      if (pc) await pc.setRemoteDescription(new RTCSessionDescription(sdp));
-    });
+  <!-- Right: Controls -->
+  <div class="right-col">
 
-    socket.on('ice-candidate', ({ candidate }) => {
-      if (pc && candidate) pc.addIceCandidate(new RTCIceCandidate(candidate));
-    });
+    <!-- Call Controls -->
+    <div class="card">
+      <div class="card-header">Call Controls</div>
+      <div class="card-body">
+        <div class="btn-stack">
+          <button class="btn btn-primary" id="connectBtn" onclick="connectAudio()">
+            🎙 Connect My Audio
+          </button>
+          <button class="btn btn-green" id="takeoverBtn" onclick="takeoverAsHuman()" disabled>
+            👤 Take Over as Human Agent
+          </button>
+          <button class="btn btn-red" id="endBtn" onclick="endCall()" disabled>
+            ✕ End Call
+          </button>
+        </div>
+      </div>
+    </div>
 
-    async function connectAudio() {
-      try {
-        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    <!-- Handoff Triggers -->
+    <div class="card">
+      <div class="card-header">Trigger Handoff Scenarios</div>
+      <div class="card-body">
+        <div class="trigger-list">
+          <button class="trigger-btn" id="t1" onclick="triggerHandoff('Language barrier detected')" disabled>
+            <div class="trigger-icon">🌐</div>
+            <div class="trigger-text-wrap">
+              <div class="trigger-name">Language Barrier</div>
+              <div class="trigger-desc">Unsupported dialect detected</div>
+            </div>
+          </button>
+          <button class="trigger-btn" id="t2" onclick="triggerHandoff('Customer requested file upload')" disabled>
+            <div class="trigger-icon">📎</div>
+            <div class="trigger-text-wrap">
+              <div class="trigger-name">File Upload Requested</div>
+              <div class="trigger-desc">Customer needs to send documents</div>
+            </div>
+          </button>
+          <button class="trigger-btn" id="t3" onclick="triggerHandoff('Complex query beyond AI scope')" disabled>
+            <div class="trigger-icon">🧠</div>
+            <div class="trigger-text-wrap">
+              <div class="trigger-name">Complex Query</div>
+              <div class="trigger-desc">Outside AI capabilities</div>
+            </div>
+          </button>
+          <button class="trigger-btn" id="t4" onclick="triggerHandoff('Customer requested human agent')" disabled>
+            <div class="trigger-icon">🙋</div>
+            <div class="trigger-text-wrap">
+              <div class="trigger-name">Customer Request</div>
+              <div class="trigger-desc">Explicitly asked for human</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
 
-        pc = new RTCPeerConnection(iceServers);
+    <!-- Stats -->
+    <div class="card">
+      <div class="card-header">Session Stats</div>
+      <div class="card-body">
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-val" id="statDuration">0:00</div>
+            <div class="stat-lbl">Duration</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="statHandoffs">0</div>
+            <div class="stat-lbl">Handoffs</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="statMode">—</div>
+            <div class="stat-lbl">Current Mode</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="statMessages">0</div>
+            <div class="stat-lbl">Messages</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        pc.onicecandidate = (e) => {
-          if (e.candidate) socket.emit('ice-candidate', { target: 'customer', candidate: e.candidate });
-        };
+  </div>
+</div>
 
-        pc.ontrack = (e) => {
-          document.getElementById('remoteAudio').srcObject = e.streams[0];
-        };
+<audio id="remoteAudio" autoplay playsinline></audio>
 
-        localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+<script>
+  const socket = io();
+  let pc = null;
+  let localStream = null;
+  let callState = 'idle';
+  let handoffCount = 0;
+  let messageCount = 0;
+  let callStart = null;
+  let timerInterval = null;
+  let iceConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        socket.emit('offer', { target: 'customer', sdp: pc.localDescription });
+  fetch('/ice-config').then(r => r.json()).then(cfg => { iceConfig = cfg; }).catch(() => {});
 
-        document.getElementById('connectBtn').disabled = true;
-        document.getElementById('connectBtn').textContent = '✓ Audio Connected';
-        document.getElementById('endBtn').disabled = false;
+  socket.emit('register-agent');
 
-        addTranscript('system', '— Agent audio connected —');
-      } catch (err) {
-        alert('Mic access error: ' + err.message);
-      }
+  socket.on('call-state', ({ state }) => {
+    callState = state;
+    updateCallUI(state);
+    if (state !== 'idle' && !callStart) {
+      callStart = Date.now();
+      timerInterval = setInterval(updateTimer, 1000);
     }
-
-    function takeoverAsHuman() {
-      triggerHandoff('Agent manually took over');
-      document.getElementById('takeoverBtn').disabled = true;
-    }
-
-    function triggerHandoff(reason) {
-      socket.emit('trigger-handoff', { reason });
-      document.getElementById('takeoverBtn').disabled = true;
-    }
-
-    function endCall() {
-      socket.emit('end-call');
-      cleanup();
-    }
-
-    function sendMessage() {
-      const input = document.getElementById('msgInput');
-      const text = input.value.trim();
-      if (!text) return;
-      socket.emit('chat-message', { text, role: callState === 'human-active' ? 'human' : 'ai' });
-      input.value = '';
-    }
-
-    document.getElementById('msgInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') sendMessage();
-    });
-
-    function cleanup() {
-      if (localStream) localStream.getTracks().forEach(t => t.stop());
-      if (pc) pc.close();
-      pc = null;
-      localStream = null;
-      document.getElementById('connectBtn').disabled = false;
-      document.getElementById('connectBtn').textContent = '🎙 Connect My Audio';
-      document.getElementById('takeoverBtn').disabled = true;
-      document.getElementById('endBtn').disabled = true;
-      updateCallUI('idle');
+    if (state === 'idle') {
       clearInterval(timerInterval);
       callStart = null;
+      document.getElementById('statDuration').textContent = '0:00';
     }
+  });
 
-    function updateCallUI(state) {
-      const dot = document.getElementById('bigDot');
-      const title = document.getElementById('callTitle');
-      const sub = document.getElementById('callSub');
-      const badge = document.getElementById('modeBadge');
-      const takeover = document.getElementById('takeoverBtn');
+  socket.on('handoff-triggered', ({ reason }) => {
+    handoffCount++;
+    document.getElementById('statHandoffs').textContent = handoffCount;
+    addT('system', `Handoff triggered: ${reason}`);
+  });
 
-      dot.className = 'big-dot ' + (state === 'ai-active' ? 'ai' : state === 'human-active' ? 'human' : 'idle');
+  socket.on('call-ended', () => { addT('system', 'Call ended'); cleanup(); });
 
-      if (state === 'ai-active') {
-        title.textContent = 'AI Agent Active';
-        sub.textContent = 'AI is handling the customer call';
-        badge.textContent = 'AI Mode';
-        badge.className = 'mode-badge ai';
-        takeover.disabled = false;
-        document.getElementById('statMode').textContent = 'AI';
-        ['t1','t2','t3','t4'].forEach(id => document.getElementById(id).disabled = false);
-      } else if (state === 'human-active') {
-        title.textContent = 'Human Agent Active';
-        sub.textContent = 'You are handling the customer call';
-        badge.textContent = 'Human Mode';
-        badge.className = 'mode-badge human';
-        document.getElementById('statMode').textContent = 'Human';
-        ['t1','t2','t3','t4'].forEach(id => document.getElementById(id).disabled = true);
-      } else {
-        title.textContent = 'No active call';
-        sub.textContent = 'Waiting for customer to join...';
-        badge.textContent = 'Idle';
-        badge.className = 'mode-badge idle';
-        takeover.disabled = true;
-        document.getElementById('statMode').textContent = '—';
-        ['t1','t2','t3','t4'].forEach(id => document.getElementById(id).disabled = true);
-      }
+  socket.on('chat-message', ({ text, role }) => {
+    addT(role, text);
+    messageCount++;
+    document.getElementById('statMessages').textContent = messageCount;
+  });
+
+  // Agent answers the customer's offer
+  socket.on('offer', async ({ sdp }) => {
+    addT('system', 'Customer connected, setting up audio...');
+    try {
+      if (!pc) { addT('system', 'Click "Connect My Audio" first, then ask customer to rejoin.'); return; }
+      await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      socket.emit('answer', { target: 'customer', sdp: pc.localDescription });
+      addT('system', 'Audio handshake complete ✓');
+    } catch(e) { addT('system', 'Error: ' + e.message); }
+  });
+
+  socket.on('ice-candidate', async ({ candidate }) => {
+    if (pc && candidate) {
+      try { await pc.addIceCandidate(new RTCIceCandidate(candidate)); } catch(e) {}
     }
+  });
 
-    function updateTimer() {
-      if (!callStart) return;
-      const elapsed = Math.floor((Date.now() - callStart) / 1000);
-      const m = Math.floor(elapsed / 60);
-      const s = elapsed % 60;
-      document.getElementById('statDuration').textContent = `${m}:${s.toString().padStart(2, '0')}`;
-    }
+  async function connectAudio() {
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      pc = new RTCPeerConnection(iceConfig);
 
-    function addTranscript(role, text) {
-      const t = document.getElementById('transcript');
-      const line = document.createElement('div');
-      line.className = `t-line ${role}`;
-      const labels = { ai: 'AI', human: 'You', customer: 'Customer', system: '' };
-      const spk = labels[role] || '';
-      line.innerHTML = spk ? `<span class="spk">${spk}:</span>${text}` : `<span>${text}</span>`;
-      t.appendChild(line);
-      t.scrollTop = t.scrollHeight;
+      pc.onicecandidate = (e) => {
+        if (e.candidate) socket.emit('ice-candidate', { target: 'customer', candidate: e.candidate });
+      };
+
+      pc.oniceconnectionstatechange = () => addT('system', 'Connection: ' + pc.iceConnectionState);
+
+      pc.ontrack = (e) => {
+        addT('system', 'Remote audio connected ✓');
+        const audio = document.getElementById('remoteAudio');
+        audio.srcObject = e.streams[0];
+        audio.play().catch(() => {});
+      };
+
+      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+      document.getElementById('connectBtn').disabled = true;
+      document.getElementById('connectBtn').textContent = '✓ Audio Connected';
+      document.getElementById('endBtn').disabled = false;
+      addT('system', 'Mic ready — ask customer to click Join Call');
+      socket.emit('agent-ready');
+    } catch(err) {
+      alert('Mic error: ' + err.message);
     }
-  </script>
+  }
+
+  function takeoverAsHuman() {
+    triggerHandoff('Agent manually took over');
+  }
+
+  function triggerHandoff(reason) {
+    socket.emit('trigger-handoff', { reason });
+    document.getElementById('takeoverBtn').disabled = true;
+    ['t1','t2','t3','t4'].forEach(id => document.getElementById(id).disabled = true);
+  }
+
+  function endCall() { socket.emit('end-call'); cleanup(); }
+
+  function sendMessage() {
+    const input = document.getElementById('msgInput');
+    const text = input.value.trim();
+    if (!text) return;
+    socket.emit('chat-message', { text, role: callState === 'human-active' ? 'human' : 'ai' });
+    input.value = '';
+  }
+
+  document.getElementById('msgInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') sendMessage();
+  });
+
+  function cleanup() {
+    if (localStream) localStream.getTracks().forEach(t => t.stop());
+    if (pc) pc.close();
+    pc = null; localStream = null;
+    document.getElementById('connectBtn').disabled = false;
+    document.getElementById('connectBtn').innerHTML = '🎙 Connect My Audio';
+    document.getElementById('takeoverBtn').disabled = true;
+    document.getElementById('endBtn').disabled = true;
+    clearInterval(timerInterval); callStart = null;
+    updateCallUI('idle');
+  }
+
+  function updateCallUI(state) {
+    const bar = document.getElementById('statusBar');
+    const dot = document.getElementById('statusDot');
+    const title = document.getElementById('statusTitle');
+    const sub = document.getElementById('statusSub');
+    const pill = document.getElementById('modePill');
+    const takeover = document.getElementById('takeoverBtn');
+
+    bar.className = 'status-bar ' + (state === 'ai-active' ? 'ai-active' : state === 'human-active' ? 'human-active' : 'idle');
+    dot.className = 'status-dot ' + (state === 'ai-active' ? 'ai' : state === 'human-active' ? 'human' : '');
+
+    if (state === 'ai-active') {
+      title.textContent = 'AI Agent Active';
+      sub.textContent = 'AI is handling the customer call';
+      pill.textContent = 'AI Mode'; pill.className = 'mode-pill ai';
+      takeover.disabled = false;
+      document.getElementById('statMode').textContent = 'AI';
+      ['t1','t2','t3','t4'].forEach(id => document.getElementById(id).disabled = false);
+    } else if (state === 'human-active') {
+      title.textContent = 'Human Agent Active';
+      sub.textContent = 'You are handling the customer call';
+      pill.textContent = 'Human Mode'; pill.className = 'mode-pill human';
+      document.getElementById('statMode').textContent = 'Human';
+    } else {
+      title.textContent = 'No active call';
+      sub.textContent = 'Waiting for customer to join...';
+      pill.textContent = 'Idle'; pill.className = 'mode-pill idle';
+      takeover.disabled = true;
+      document.getElementById('statMode').textContent = '—';
+    }
+  }
+
+  function updateTimer() {
+    if (!callStart) return;
+    const s = Math.floor((Date.now() - callStart) / 1000);
+    document.getElementById('statDuration').textContent = `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
+  }
+
+  function addT(role, text) {
+    const t = document.getElementById('transcript');
+    const wrap = document.createElement('div');
+    if (role === 'system') {
+      wrap.className = 't-system';
+      wrap.textContent = text;
+    } else {
+      wrap.className = 't-msg';
+      const labels = { ai: 'AI Agent', human: 'You', customer: 'Customer' };
+      wrap.innerHTML = `<div class="t-label ${role}">${labels[role] || role}</div><div class="t-text">${text}</div>`;
+    }
+    t.appendChild(wrap);
+    t.scrollTop = t.scrollHeight;
+  }
+</script>
 </body>
 </html>

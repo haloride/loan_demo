@@ -1,36 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Loan Assistant – Customer</title>
+  <title>LoanAssist</title>
   <script src="/socket.io/socket.io.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0d1117;
-      --surface: #161b22;
-      --border: #30363d;
-      --text: #e6edf3;
-      --muted: #8b949e;
-      --accent: #58a6ff;
-      --green: #3fb950;
-      --orange: #d29922;
-      --red: #f85149;
-      --ai-color: #58a6ff;
-      --human-color: #3fb950;
+      --bg: #f0f4f9;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --primary: #2563eb;
+      --primary-light: #eff6ff;
+      --green: #16a34a;
+      --green-light: #f0fdf4;
+      --green-border: #bbf7d0;
+      --red: #dc2626;
+      --red-border: #fecaca;
     }
 
     body {
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 24px;
@@ -40,359 +40,329 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 40px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      padding: 32px;
       width: 100%;
-      max-width: 480px;
+      max-width: 420px;
       display: flex;
       flex-direction: column;
-      gap: 28px;
+      gap: 24px;
     }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
+    .logo { display: flex; align-items: center; gap: 10px; }
     .logo-icon {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, #1f6feb, #388bfd);
+      width: 38px; height: 38px;
+      background: var(--primary);
       border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.3);
     }
+    .logo-name { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+    .logo-sub { font-size: 11px; color: var(--text-muted); }
 
-    .logo-text { font-size: 18px; font-weight: 600; }
-    .logo-sub { font-size: 12px; color: var(--muted); }
-
-    .status-banner {
-      background: #161b22;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 18px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 14px;
-    }
-
-    .status-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--muted);
-      flex-shrink: 0;
-      transition: background 0.3s;
-    }
-
-    .status-dot.idle { background: var(--muted); }
-    .status-dot.ai { background: var(--ai-color); animation: pulse 1.5s infinite; }
-    .status-dot.human { background: var(--human-color); animation: pulse 1.5s infinite; }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    .agent-label {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 3px 8px;
-      border-radius: 4px;
-      margin-left: auto;
-    }
-
-    .agent-label.ai { background: rgba(88,166,255,0.15); color: var(--ai-color); }
-    .agent-label.human { background: rgba(63,185,80,0.15); color: var(--human-color); }
-
-    .avatar-area {
+    /* Agent card */
+    .agent-card {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      transition: all 0.4s;
     }
 
-    .avatar-ring {
-      width: 100px;
-      height: 100px;
+    .agent-card.ai { background: var(--primary-light); border-color: #bfdbfe; }
+    .agent-card.human { background: var(--green-light); border-color: var(--green-border); }
+
+    .avatar {
+      width: 72px; height: 72px;
       border-radius: 50%;
+      background: white;
       border: 2px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 40px;
-      position: relative;
-      transition: border-color 0.4s;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: all 0.4s;
     }
 
-    .avatar-ring.ai { border-color: var(--ai-color); box-shadow: 0 0 20px rgba(88,166,255,0.2); }
-    .avatar-ring.human { border-color: var(--human-color); box-shadow: 0 0 20px rgba(63,185,80,0.2); }
+    .avatar.ai { border-color: #93c5fd; box-shadow: 0 0 0 4px rgba(37,99,235,0.08); }
+    .avatar.human { border-color: #86efac; box-shadow: 0 0 0 4px rgba(22,163,74,0.08); }
 
-    .avatar-ring::after {
-      content: '';
-      position: absolute;
-      inset: -6px;
-      border-radius: 50%;
-      border: 1px solid transparent;
-      transition: border-color 0.4s;
+    .agent-name { font-size: 15px; font-weight: 600; }
+    .agent-desc { font-size: 13px; color: var(--text-secondary); text-align: center; }
+
+    .status-pill {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 20px;
+      font-size: 11px; font-weight: 600;
+      background: white; border: 1px solid var(--border);
     }
 
-    .avatar-ring.ai::after { border-color: rgba(88,166,255,0.3); }
-    .avatar-ring.human::after { border-color: rgba(63,185,80,0.3); }
+    .pill-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--text-muted);
+    }
+    .pill-dot.ai { background: var(--primary); animation: pulse 1.8s infinite; }
+    .pill-dot.human { background: var(--green); animation: pulse 1.8s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;}50%{opacity:0.4;} }
 
-    .agent-name { font-size: 16px; font-weight: 500; }
-    .agent-desc { font-size: 13px; color: var(--muted); text-align: center; }
-
+    /* Transcript */
     .transcript {
-      background: #0d1117;
+      background: #fafbfc;
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 14px;
-      height: 180px;
+      padding: 12px;
+      height: 160px;
       overflow-y: auto;
-      font-family: 'DM Mono', monospace;
       font-size: 12px;
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
 
-    .transcript-line { line-height: 1.5; }
-    .transcript-line .speaker { font-weight: 500; margin-right: 6px; }
-    .transcript-line.ai .speaker { color: var(--ai-color); }
-    .transcript-line.human .speaker { color: var(--human-color); }
-    .transcript-line.system { color: var(--muted); font-style: italic; }
+    .transcript::-webkit-scrollbar { width: 3px; }
+    .transcript::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-    .controls {
-      display: flex;
-      flex-direction: column;
+    .t-msg { display: flex; flex-direction: column; gap: 1px; }
+    .t-label { font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+    .t-label.ai { color: var(--primary); }
+    .t-label.human { color: var(--green); }
+    .t-text { font-size: 12px; color: var(--text); line-height: 1.5; }
+    .t-system { font-size: 11px; color: var(--text-muted); font-style: italic; text-align: center; }
+
+    /* Handoff notice */
+    .handoff-banner {
+      display: none;
+      align-items: center;
       gap: 10px;
+      padding: 12px 16px;
+      background: var(--green-light);
+      border: 1px solid var(--green-border);
+      border-radius: 10px;
+      font-size: 13px;
+      color: var(--green);
+      font-weight: 500;
     }
+    .handoff-banner.visible { display: flex; }
+
+    /* Buttons */
+    .btn-stack { display: flex; flex-direction: column; gap: 8px; }
 
     button {
-      width: 100%;
-      padding: 13px;
-      border-radius: 10px;
-      border: none;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
+      width: 100%; padding: 12px;
+      border-radius: 10px; border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all 0.15s;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #1f6feb, #388bfd);
-      color: white;
+      background: var(--primary); color: white;
+      box-shadow: 0 1px 3px rgba(37,99,235,0.3);
     }
+    .btn-primary:hover:not(:disabled) { background: #1d4ed8; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
 
-    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
-    .btn-danger {
-      background: rgba(248,81,73,0.15);
-      color: var(--red);
-      border: 1px solid rgba(248,81,73,0.3);
+    .btn-outline {
+      background: white; color: var(--red);
+      border: 1.5px solid var(--red-border);
     }
+    .btn-outline:hover:not(:disabled) { background: #fef2f2; }
+    .btn-outline:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    .btn-danger:hover { background: rgba(248,81,73,0.25); }
-    .btn-danger:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    .handoff-notice {
-      display: none;
-      background: rgba(63,185,80,0.1);
-      border: 1px solid rgba(63,185,80,0.3);
-      border-radius: 10px;
-      padding: 14px 18px;
-      font-size: 13px;
-      color: var(--green);
-      text-align: center;
+    /* Debug */
+    #debugLog {
+      font-family: monospace; font-size: 10px;
+      color: var(--text-muted); background: #fafbfc;
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px; max-height: 70px; overflow-y: auto;
     }
-
-    .handoff-notice.visible { display: block; }
 
     audio { display: none; }
   </style>
 </head>
 <body>
   <div class="card">
+
     <div class="logo">
       <div class="logo-icon">💰</div>
       <div>
-        <div class="logo-text">LoanAssist</div>
+        <div class="logo-name">LoanAssist</div>
         <div class="logo-sub">AI-Powered Loan Service</div>
       </div>
     </div>
 
-    <div class="status-banner">
-      <div class="status-dot idle" id="statusDot"></div>
-      <span id="statusText">Waiting to connect...</span>
-      <span class="agent-label ai" id="agentLabel" style="display:none">AI Agent</span>
-    </div>
-
-    <div class="avatar-area">
-      <div class="avatar-ring" id="avatarRing">🤖</div>
+    <div class="agent-card" id="agentCard">
+      <div class="avatar" id="avatar">🤖</div>
       <div class="agent-name" id="agentName">AI Loan Assistant</div>
-      <div class="agent-desc" id="agentDesc">Ready to help you with your loan application</div>
+      <div class="agent-desc" id="agentDesc">Ready to help with your loan application</div>
+      <div class="status-pill" id="statusPill">
+        <div class="pill-dot" id="pillDot"></div>
+        <span id="pillText">Waiting to connect</span>
+      </div>
     </div>
 
     <div class="transcript" id="transcript">
-      <div class="transcript-line system"><span>— Call transcript will appear here —</span></div>
+      <div class="t-system">— Transcript will appear here —</div>
     </div>
 
-    <div class="handoff-notice" id="handoffNotice">
-      🔄 You're being transferred to a human agent. Please hold...
+    <div class="handoff-banner" id="handoffBanner">
+      🔄 Transferring to a human agent, please hold...
     </div>
 
-    <div class="controls">
+    <div class="btn-stack">
       <button class="btn-primary" id="joinBtn" onclick="joinCall()">Join Call</button>
-      <button class="btn-danger" id="endBtn" onclick="endCall()" disabled>End Call</button>
+      <button class="btn-outline" id="endBtn" onclick="endCall()" disabled>End Call</button>
     </div>
+
+    <div id="debugLog">Connecting...</div>
   </div>
 
-  <audio id="remoteAudio" autoplay></audio>
+  <audio id="remoteAudio" autoplay playsinline></audio>
 
   <script>
     const socket = io();
     let pc = null;
     let localStream = null;
-    let callActive = false;
-    let iceServers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+    let iceConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
-    // Fetch ICE config from server (includes TURN servers)
-    fetch('/ice-config').then(r => r.json()).then(config => { iceServers = config; }).catch(() => {});
+    function log(msg) {
+      const d = document.getElementById('debugLog');
+      const line = document.createElement('div');
+      line.textContent = new Date().toLocaleTimeString('en',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'}) + ' ' + msg;
+      d.appendChild(line);
+      d.scrollTop = d.scrollHeight;
+    }
+
+    fetch('/ice-config').then(r => r.json()).then(cfg => { iceConfig = cfg; log('ICE config ready ✓'); }).catch(() => log('STUN only'));
 
     socket.emit('register-customer');
-
-    socket.on('call-state', ({ state }) => {
-      updateUI(state);
-    });
+    socket.on('call-state', ({ state }) => updateUI(state));
 
     socket.on('handoff-triggered', ({ reason }) => {
-      addTranscript('system', `⚡ Handoff: ${reason}`);
-      document.getElementById('handoffNotice').classList.add('visible');
-      setTimeout(() => document.getElementById('handoffNotice').classList.remove('visible'), 5000);
+      addT('system', `Handoff: ${reason}`);
+      const b = document.getElementById('handoffBanner');
+      b.classList.add('visible');
+      setTimeout(() => b.classList.remove('visible'), 6000);
     });
 
-    socket.on('call-ended', () => {
-      addTranscript('system', '— Call ended —');
-      cleanup();
+    socket.on('call-ended', () => { addT('system', 'Call ended'); cleanup(); });
+    socket.on('chat-message', ({ text, role }) => addT(role, text));
+
+    socket.on('answer', async ({ sdp }) => {
+      log('Got answer ✓');
+      try { await pc.setRemoteDescription(new RTCSessionDescription(sdp)); }
+      catch(e) { log('Answer err: ' + e.message); }
     });
 
-    socket.on('chat-message', ({ text, role }) => {
-      addTranscript(role, text);
-    });
-
-    // WebRTC signaling
-    socket.on('offer', async ({ sdp }) => {
-      if (!pc) await setupPeerConnection();
-      await pc.setRemoteDescription(new RTCSessionDescription(sdp));
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-      socket.emit('answer', { target: 'agent', sdp: pc.localDescription });
-    });
-
-    socket.on('ice-candidate', ({ candidate }) => {
-      if (pc && candidate) pc.addIceCandidate(new RTCIceCandidate(candidate));
-    });
-
-    async function setupPeerConnection() {
-      pc = new RTCPeerConnection(iceServers);
-
-      pc.onicecandidate = (e) => {
-        if (e.candidate) socket.emit('ice-candidate', { target: 'agent', candidate: e.candidate });
-      };
-
-      pc.ontrack = (e) => {
-        document.getElementById('remoteAudio').srcObject = e.streams[0];
-      };
-
-      if (localStream) {
-        localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+    socket.on('ice-candidate', async ({ candidate }) => {
+      if (pc && candidate) {
+        try { await pc.addIceCandidate(new RTCIceCandidate(candidate)); } catch(e) {}
       }
-    }
+    });
+
+    socket.on('agent-ready', async () => {
+      log('Agent ready — resending offer');
+      if (pc && localStream) await sendOffer();
+    });
 
     async function joinCall() {
       try {
+        log('Requesting mic...');
         localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-        await setupPeerConnection();
-        callActive = true;
+        log('Mic granted ✓');
+
+        pc = new RTCPeerConnection(iceConfig);
+
+        pc.onicecandidate = e => {
+          if (e.candidate) socket.emit('ice-candidate', { target: 'agent', candidate: e.candidate });
+        };
+
+        pc.oniceconnectionstatechange = () => log('ICE: ' + pc.iceConnectionState);
+        pc.onconnectionstatechange = () => log('Conn: ' + pc.connectionState);
+
+        pc.ontrack = e => {
+          log('Remote audio ✓');
+          const a = document.getElementById('remoteAudio');
+          a.srcObject = e.streams[0];
+          a.play().catch(err => log('Play blocked: ' + err.message));
+        };
+
+        localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
         document.getElementById('joinBtn').disabled = true;
         document.getElementById('endBtn').disabled = false;
-        addTranscript('system', '— You joined the call —');
+        addT('system', 'You joined the call');
         socket.emit('start-call');
-      } catch (err) {
-        alert('Microphone access needed: ' + err.message);
+        await sendOffer();
+      } catch(err) {
+        log('Error: ' + err.message);
+        alert('Mic access needed: ' + err.message);
       }
     }
 
-    function endCall() {
-      socket.emit('end-call');
-      cleanup();
+    async function sendOffer() {
+      log('Sending offer...');
+      const offer = await pc.createOffer({ offerToReceiveAudio: true });
+      await pc.setLocalDescription(offer);
+      socket.emit('offer', { target: 'agent', sdp: pc.localDescription });
+      log('Offer sent ✓');
     }
+
+    function endCall() { socket.emit('end-call'); cleanup(); }
 
     function cleanup() {
       if (localStream) localStream.getTracks().forEach(t => t.stop());
       if (pc) pc.close();
-      pc = null;
-      localStream = null;
-      callActive = false;
+      pc = null; localStream = null;
       document.getElementById('joinBtn').disabled = false;
       document.getElementById('endBtn').disabled = true;
       updateUI('idle');
     }
 
     function updateUI(state) {
-      const dot = document.getElementById('statusDot');
-      const statusText = document.getElementById('statusText');
-      const avatarRing = document.getElementById('avatarRing');
+      const card = document.getElementById('agentCard');
+      const avatar = document.getElementById('avatar');
       const agentName = document.getElementById('agentName');
       const agentDesc = document.getElementById('agentDesc');
-      const agentLabel = document.getElementById('agentLabel');
-
-      dot.className = 'status-dot ' + (state === 'ai-active' ? 'ai' : state === 'human-active' ? 'human' : 'idle');
+      const dot = document.getElementById('pillDot');
+      const pillText = document.getElementById('pillText');
 
       if (state === 'ai-active') {
-        statusText.textContent = 'Connected to AI Agent';
-        avatarRing.className = 'avatar-ring ai';
-        avatarRing.textContent = '🤖';
+        card.className = 'agent-card ai';
+        avatar.className = 'avatar ai'; avatar.textContent = '🤖';
         agentName.textContent = 'AI Loan Assistant';
         agentDesc.textContent = 'Processing your loan application';
-        agentLabel.textContent = 'AI Agent';
-        agentLabel.className = 'agent-label ai';
-        agentLabel.style.display = 'block';
+        dot.className = 'pill-dot ai'; pillText.textContent = 'Connected to AI Agent';
       } else if (state === 'human-active') {
-        statusText.textContent = 'Connected to Human Agent';
-        avatarRing.className = 'avatar-ring human';
-        avatarRing.textContent = '👤';
+        card.className = 'agent-card human';
+        avatar.className = 'avatar human'; avatar.textContent = '👤';
         agentName.textContent = 'Human Loan Advisor';
         agentDesc.textContent = 'A specialist is now assisting you';
-        agentLabel.textContent = 'Human Agent';
-        agentLabel.className = 'agent-label human';
-        agentLabel.style.display = 'block';
+        dot.className = 'pill-dot human'; pillText.textContent = 'Connected to Human Agent';
       } else {
-        statusText.textContent = 'Waiting to connect...';
-        avatarRing.className = 'avatar-ring';
-        avatarRing.textContent = '🤖';
+        card.className = 'agent-card';
+        avatar.className = 'avatar'; avatar.textContent = '🤖';
         agentName.textContent = 'AI Loan Assistant';
-        agentDesc.textContent = 'Ready to help you with your loan application';
-        agentLabel.style.display = 'none';
+        agentDesc.textContent = 'Ready to help with your loan application';
+        dot.className = 'pill-dot'; pillText.textContent = 'Waiting to connect';
       }
     }
 
-    function addTranscript(role, text) {
+    function addT(role, text) {
       const t = document.getElementById('transcript');
-      const line = document.createElement('div');
-      line.className = `transcript-line ${role}`;
-      const speaker = role === 'ai' ? 'AI' : role === 'human' ? 'Agent' : '';
-      line.innerHTML = speaker ? `<span class="speaker">${speaker}:</span>${text}` : `<span>${text}</span>`;
-      t.appendChild(line);
-      t.scrollTop = t.scrollHeight;
+      const wrap = document.createElement('div');
+      if (role === 'system') {
+        wrap.className = 't-system'; wrap.textContent = text;
+      } else {
+        wrap.className = 't-msg';
+        const labels = { ai: 'AI Agent', human: 'Human Agent', customer: 'You' };
+        wrap.innerHTML = `<div class="t-label ${role}">${labels[role]||role}</div><div class="t-text">${text}</div>`;
+      }
+      t.appendChild(wrap); t.scrollTop = t.scrollHeight;
     }
   </script>
 </body>
