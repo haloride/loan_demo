@@ -109,7 +109,7 @@
 
   <!-- Mic input row (shown during AI call) -->
   <div class="input-row" id="micRow" style="display:none">
-    <button class="mic-btn idle-mic" id="micBtn" onclick="toggleRecording()">🎤</button>
+    <button class="mic-btn idle-mic" id="micBtn" onclick="toggleRecording()" disabled>🎤</button>
     <span style="font-size:12px;color:var(--muted)" id="micHint">Tap mic to speak</span>
   </div>
 
@@ -162,33 +162,43 @@ socket.on('ice-candidate',async({candidate})=>{ if(pc&&candidate){ try{await pc.
 socket.on('agent-ready',async()=>{ log('Agent ready — sending offer'); if(pc&&localStream) await sendOffer(); else log('No PC/stream yet'); });
 
 async function joinCall(){
+  const btn = document.getElementById('joinBtn');
+  btn.disabled = true;
+  btn.textContent = 'Connecting...';
   try{
     log('Getting mic...');
     localStream = await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+    log('Mic granted ✓');
     pc = new RTCPeerConnection(iceConfig);
     pc.onicecandidate=e=>{ if(e.candidate) socket.emit('ice-candidate',{target:'agent',candidate:e.candidate}); };
     pc.oniceconnectionstatechange=()=>{
       log('ICE: '+pc.iceConnectionState);
       if(pc.iceConnectionState==='disconnected'){
-        setTimeout(async()=>{ if(pc&&pc.iceConnectionState==='disconnected'){ const o=await pc.createOffer({iceRestart:true}); await pc.setLocalDescription(o); socket.emit('offer',{target:'agent',sdp:pc.localDescription}); }},2000);
+        setTimeout(async()=>{ if(pc&&pc.iceConnectionState==='disconnected'){ try{ const o=await pc.createOffer({iceRestart:true}); await pc.setLocalDescription(o); socket.emit('offer',{target:'agent',sdp:pc.localDescription}); }catch(e){} }},2000);
       }
     };
     pc.ontrack=e=>{ log('Remote audio ✓'); const a=document.getElementById('remoteAudio'); a.srcObject=e.streams[0]; a.play().catch(()=>{}); };
     localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
-    document.getElementById('joinBtn').disabled=true;
     document.getElementById('endBtn').disabled=false;
     socket.emit('start-call');
-    // Don't send offer yet — wait for agent-ready signal
-    // Start AI conversation
     callPhase='ai';
     document.getElementById('stepsRow').style.display='flex';
     document.getElementById('micRow').style.display='flex';
     updateUI('ai-active');
-    // AI greets customer
-    await aiSpeak("Namaste! Main aapka AI Loan Assistant hoon. Kya aap ek used car loan ke baare mein jaankari lena chahte hain? Are you interested in a used car loan today?");
-    addT('ai',"Namaste! Main aapka AI Loan Assistant hoon. Kya aap ek used car loan ke baare mein jaankari lena chahte hain? Are you interested in a used car loan today?");
+    // Greet — wrap in try/catch so speech failure doesn't block
+    const greeting = "Namaste! Main aapka AI Loan Assistant hoon. Kya aap ek used car loan ke baare mein jaankari lena chahte hain? Are you interested in a used car loan today?";
+    addT('ai', greeting);
     setStep(0,'active');
-  } catch(err){ log('Error: '+err.message); alert('Mic needed: '+err.message); }
+    try{ await aiSpeak(greeting); } catch(e){ log('Speech error: '+e.message); }
+    document.getElementById('micBtn').disabled = false;
+    document.getElementById('micHint').textContent = 'Tap mic to speak';
+  } catch(err){
+    log('Error: '+err.message);
+    btn.disabled = false;
+    btn.textContent = 'Join Call';
+    if(err.name === 'NotAllowedError'){ alert('Please allow microphone access and try again.'); }
+    else{ alert('Could not start call: '+err.message); }
+  }
 }
 
 async function sendOffer(){
