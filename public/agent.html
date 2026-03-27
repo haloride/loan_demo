@@ -23,74 +23,86 @@
     .logo-name{font-size:16px;font-weight:700;letter-spacing:-.3px}
     .logo-sub{font-size:11px;color:var(--muted)}
     .badge{font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;background:var(--primary-light);color:var(--primary);border:1px solid #bfdbfe}
-    .layout{display:grid;grid-template-columns:1fr 320px;gap:16px;max-width:1200px}
+    .layout{display:grid;grid-template-columns:1fr 320px;gap:16px;max-width:1300px}
     .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-    .card-header{padding:16px 20px 0;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+    .card-header{padding:16px 20px 0;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;justify-content:space-between}
     .card-body{padding:16px 20px 20px}
-    /* Active call panel */
-    .call-status{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg);margin-bottom:16px;transition:all .3s}
-    .call-status.ai{background:var(--primary-light);border-color:#bfdbfe}
-    .call-status.human{background:var(--green-light);border-color:var(--green-border)}
+    /* Call status */
+    .call-bar{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg);margin-bottom:16px;transition:all .3s}
+    .call-bar.human{background:var(--green-light);border-color:var(--green-border)}
     .sdot{width:9px;height:9px;border-radius:50%;background:var(--muted);flex-shrink:0}
-    .sdot.ai{background:var(--primary);animation:pulse 1.8s infinite}
     .sdot.human{background:var(--green);animation:pulse 1.8s infinite}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
     .call-info{flex:1}
     .call-title{font-size:13px;font-weight:600}
     .call-sub{font-size:12px;color:var(--secondary);margin-top:2px}
-    .mode-pill{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px}
-    .mode-pill.idle{background:#f1f5f9;color:var(--secondary)}
-    .mode-pill.ai{background:var(--primary-light);color:var(--primary)}
-    .mode-pill.human{background:var(--green-light);color:var(--green)}
-    /* Customer details */
-    .details-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
-    .detail-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
-    .detail-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
-    .detail-val{font-size:13px;font-weight:500;margin-top:3px;color:var(--text)}
+    .mpill{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px}
+    .mpill.idle{background:#f1f5f9;color:var(--secondary)}
+    .mpill.human{background:var(--green-light);color:var(--green)}
+    /* Details grid */
+    .dgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+    .dbox{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+    .dlabel{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+    .dval{font-size:13px;font-weight:500;margin-top:3px}
     /* Transcript */
-    .transcript{background:#fafbfc;border:1px solid var(--border-light);border-radius:10px;padding:14px;height:220px;overflow-y:auto;font-size:13px;display:flex;flex-direction:column;gap:8px}
+    .transcript{background:#fafbfc;border:1px solid var(--border-light);border-radius:10px;padding:14px;height:200px;overflow-y:auto;font-size:13px;display:flex;flex-direction:column;gap:8px}
     .transcript::-webkit-scrollbar{width:4px}
     .transcript::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
-    .t-msg{display:flex;flex-direction:column;gap:2px}
-    .t-label{font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
-    .t-label.ai{color:var(--primary)}
-    .t-label.human{color:var(--green)}
-    .t-label.customer{color:var(--amber)}
-    .t-text{font-size:13px;line-height:1.5}
-    .t-system{font-size:11px;color:var(--muted);font-style:italic;text-align:center;padding:2px 0}
+    .tmsg{display:flex;flex-direction:column;gap:2px}
+    .tlabel{font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+    .tlabel.ai{color:var(--primary)}.tlabel.human{color:var(--green)}.tlabel.customer{color:var(--amber)}
+    .ttext{font-size:13px;line-height:1.5}
+    .tsys{font-size:11px;color:var(--muted);font-style:italic;text-align:center;padding:2px 0}
     .chat-row{display:flex;gap:8px;margin-top:12px}
-    .chat-input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s}
+    .chat-input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:all .2s}
     .chat-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
     .chat-input::placeholder{color:var(--muted)}
-    .send-btn{padding:10px 18px;background:var(--primary);color:white;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap}
+    .send-btn{padding:10px 18px;background:var(--primary);color:white;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer}
     .send-btn:hover{background:var(--primary-hover)}
     /* Right col */
     .right-col{display:flex;flex-direction:column;gap:16px}
-    .btn{width:100%;padding:11px 16px;border-radius:8px;border:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px}
+    .btn{width:100%;padding:11px;border-radius:8px;border:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px}
     .btn:disabled{opacity:.45;cursor:not-allowed}
     .btn-primary{background:var(--primary);color:white;box-shadow:0 1px 3px rgba(37,99,235,.3)}
     .btn-primary:hover:not(:disabled){background:var(--primary-hover);transform:translateY(-1px)}
-    .btn-green{background:var(--green);color:white}
-    .btn-green:hover:not(:disabled){background:#15803d;transform:translateY(-1px)}
     .btn-red{background:white;color:var(--red);border:1.5px solid var(--red-border)}
     .btn-red:hover:not(:disabled){background:var(--red-light)}
-    .btn-stack{display:flex;flex-direction:column;gap:8px}
+    /* Customer list */
+    .clist{display:flex;flex-direction:column;gap:6px}
+    .citem{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:11px 13px;display:flex;align-items:center;gap:10px;transition:all .2s}
+    .cavatar{width:32px;height:32px;border-radius:50%;background:var(--primary-light);border:1px solid #bfdbfe;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--primary);flex-shrink:0}
+    .cinfo{flex:1;min-width:0}
+    .cname{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .cmeta{font-size:11px;color:var(--muted);margin-top:1px}
+    .cstatus{width:7px;height:7px;border-radius:50%;background:var(--muted);flex-shrink:0}
+    .cstatus.online{background:var(--green)}
+    .cstatus.ringing{background:var(--amber);animation:pulse 0.8s infinite}
+    .call-action{padding:5px 12px;border:none;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
+    .call-action.calling{background:var(--primary);color:white}
+    .call-action.calling:hover{background:var(--primary-hover)}
+    .call-action.ringing{background:var(--amber-light);color:var(--amber);border:1px solid var(--amber-border);cursor:default}
+    .call-action.offline{background:#f1f5f9;color:var(--muted);cursor:not-allowed}
+    /* Add customer */
+    .add-form{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+    .add-input{flex:1;min-width:100px;padding:8px 12px;border:1px solid var(--border);border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;outline:none}
+    .add-input:focus{border-color:var(--primary)}
+    .add-btn{padding:8px 14px;background:var(--primary);color:white;border:none;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap}
     /* Queue */
-    .queue-list{display:flex;flex-direction:column;gap:8px}
-    .queue-item{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;transition:all .2s}
-    .queue-item:hover{border-color:var(--amber);background:var(--amber-light)}
-    .q-num{width:28px;height:28px;border-radius:50%;background:var(--amber-light);border:1px solid var(--amber-border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--amber);flex-shrink:0}
-    .q-info{flex:1}
-    .q-name{font-size:13px;font-weight:500}
-    .q-meta{font-size:11px;color:var(--muted);margin-top:2px}
-    .q-pickup{padding:6px 12px;background:var(--primary);color:white;border:none;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap}
-    .q-pickup:hover{background:var(--primary-hover)}
-    .queue-empty{text-align:center;padding:24px;color:var(--muted);font-size:13px}
+    .qlist{display:flex;flex-direction:column;gap:6px}
+    .qitem{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:11px 13px;display:flex;align-items:center;gap:10px}
+    .qitem:hover{border-color:var(--amber);background:var(--amber-light)}
+    .qnum{width:26px;height:26px;border-radius:50%;background:var(--amber-light);border:1px solid var(--amber-border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--amber);flex-shrink:0}
+    .qinfo{flex:1}
+    .qname{font-size:13px;font-weight:500}
+    .qmeta{font-size:11px;color:var(--muted);margin-top:1px}
+    .pickup-btn{padding:5px 12px;background:var(--green);color:white;border:none;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer}
+    .pickup-btn:hover{background:#15803d}
+    .empty{text-align:center;padding:20px;color:var(--muted);font-size:13px}
     /* Stats */
-    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    .stat-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
-    .stat-val{font-size:20px;font-weight:700;letter-spacing:-.5px}
-    .stat-lbl{font-size:11px;color:var(--muted)}
+    .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .sbox{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+    .sval{font-size:20px;font-weight:700;letter-spacing:-.5px}
+    .slbl{font-size:11px;color:var(--muted)}
     audio{display:none}
   </style>
 </head>
@@ -104,39 +116,34 @@
 </header>
 
 <div class="layout">
-  <!-- Left -->
+  <!-- Left: active call + transcript -->
   <div style="display:flex;flex-direction:column;gap:16px">
     <div class="card">
       <div class="card-body" style="padding-top:18px">
-        <div class="call-status idle" id="callStatus">
+        <div class="call-bar" id="callBar">
           <div class="sdot" id="sdot"></div>
           <div class="call-info">
             <div class="call-title" id="callTitle">No active call</div>
-            <div class="call-sub" id="callSub">Pick a lead from the queue to begin</div>
+            <div class="call-sub" id="callSub">Pick a lead from the queue to connect</div>
           </div>
-          <div class="mode-pill idle" id="modePill">Idle</div>
+          <div class="mpill idle" id="mpill">Idle</div>
         </div>
-
-        <!-- Customer details (shown when connected) -->
-        <div id="detailsSection" style="display:none">
+        <div id="detailsSection" style="display:none;margin-bottom:16px">
           <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Customer Details</div>
-          <div class="details-grid">
-            <div class="detail-box"><div class="detail-label">Name</div><div class="detail-val" id="dName">—</div></div>
-            <div class="detail-box"><div class="detail-label">PAN</div><div class="detail-val" id="dPan">—</div></div>
-            <div class="detail-box"><div class="detail-label">DOB</div><div class="detail-val" id="dDob">—</div></div>
-            <div class="detail-box"><div class="detail-label">Employment</div><div class="detail-val" id="dEmp">—</div></div>
-            <div class="detail-box"><div class="detail-label">Income</div><div class="detail-val" id="dIncome">—</div></div>
-            <div class="detail-box"><div class="detail-label">Pincode</div><div class="detail-val" id="dPin">—</div></div>
+          <div class="dgrid">
+            <div class="dbox"><div class="dlabel">Name</div><div class="dval" id="dName">—</div></div>
+            <div class="dbox"><div class="dlabel">PAN</div><div class="dval" id="dPan">—</div></div>
+            <div class="dbox"><div class="dlabel">DOB</div><div class="dval" id="dDob">—</div></div>
+            <div class="dbox"><div class="dlabel">Employment</div><div class="dval" id="dEmp">—</div></div>
+            <div class="dbox"><div class="dlabel">Income</div><div class="dval" id="dIncome">—</div></div>
+            <div class="dbox"><div class="dlabel">Pincode</div><div class="dval" id="dPin">—</div></div>
           </div>
         </div>
-
         <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Live Transcript</div>
-        <div class="transcript" id="transcript">
-          <div class="t-system">— Connect to a customer to see transcript —</div>
-        </div>
+        <div class="transcript" id="transcript"><div class="tsys">— Pick up a lead to see transcript —</div></div>
         <div class="chat-row">
           <input class="chat-input" id="msgInput" placeholder="Type a message to customer..." disabled/>
-          <button class="send-btn" onclick="sendMessage()" id="sendBtn" disabled>Send</button>
+          <button class="send-btn" id="sendBtn" onclick="sendMsg()" disabled>Send</button>
         </div>
       </div>
     </div>
@@ -144,27 +151,39 @@
 
   <!-- Right -->
   <div class="right-col">
-    <!-- Call controls -->
+    <!-- Controls -->
     <div class="card">
       <div class="card-header">Call Controls</div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-primary" id="connectBtn" onclick="connectAudio()">🎙 Connect My Audio</button>
+        <button class="btn btn-red" id="endBtn" onclick="endActiveCall()" disabled>✕ End Call</button>
+      </div>
+    </div>
+
+    <!-- Customer list -->
+    <div class="card">
+      <div class="card-header">
+        <span>Customers</span>
+        <span id="onlineCount" style="font-size:11px;color:var(--green);font-weight:600">0 online</span>
+      </div>
       <div class="card-body">
-        <div class="btn-stack">
-          <button class="btn btn-primary" id="connectBtn" onclick="connectAudio()">🎙 Connect My Audio</button>
-          <button class="btn btn-red" id="endBtn" onclick="endCurrentCall()" disabled>✕ End Call</button>
+        <div class="clist" id="customerList"><div class="empty">Loading...</div></div>
+        <div class="add-form">
+          <input class="add-input" id="addName" placeholder="Full name"/>
+          <input class="add-input" id="addPhone" placeholder="Phone"/>
+          <button class="add-btn" onclick="addCustomer()">+ Add</button>
         </div>
       </div>
     </div>
 
     <!-- Queue -->
     <div class="card">
-      <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;padding-bottom:4px">
+      <div class="card-header">
         <span>Queue</span>
-        <span style="background:var(--amber-light);color:var(--amber);border:1px solid var(--amber-border);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700" id="queueBadge">0</span>
+        <span id="qBadge" style="background:var(--amber-light);color:var(--amber);border:1px solid var(--amber-border);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700">0</span>
       </div>
       <div class="card-body">
-        <div class="queue-list" id="queueList">
-          <div class="queue-empty">No leads in queue</div>
-        </div>
+        <div class="qlist" id="queueList"><div class="empty">No leads in queue</div></div>
       </div>
     </div>
 
@@ -172,11 +191,11 @@
     <div class="card">
       <div class="card-header">Session Stats</div>
       <div class="card-body">
-        <div class="stats-grid">
-          <div class="stat-box"><div class="stat-val" id="statDuration">0:00</div><div class="stat-lbl">Duration</div></div>
-          <div class="stat-box"><div class="stat-val" id="statServed">0</div><div class="stat-lbl">Leads Served</div></div>
-          <div class="stat-box"><div class="stat-val" id="statQueue">0</div><div class="stat-lbl">In Queue</div></div>
-          <div class="stat-box"><div class="stat-val" id="statMode">—</div><div class="stat-lbl">Current Mode</div></div>
+        <div class="sgrid">
+          <div class="sbox"><div class="sval" id="stDur">0:00</div><div class="slbl">Duration</div></div>
+          <div class="sbox"><div class="sval" id="stServed">0</div><div class="slbl">Served</div></div>
+          <div class="sbox"><div class="sval" id="stQueue">0</div><div class="slbl">In Queue</div></div>
+          <div class="sbox"><div class="sval" id="stMode">—</div><div class="slbl">Mode</div></div>
         </div>
       </div>
     </div>
@@ -190,159 +209,209 @@ const socket = io();
 let pc = null;
 let localStream = null;
 let iceConfig = {iceServers:[{urls:'stun:stun.l.google.com:19302'}]};
+let activeCustomerId = null;
 let activeCustomerSocketId = null;
 let callStart = null;
 let timerInterval = null;
 let servedCount = 0;
-let queueData = [];
+let customers = [];
+let onlineCustomers = new Set();
+let ringingCustomers = new Set();
 
 fetch('/ice-config').then(r=>r.json()).then(cfg=>{iceConfig=cfg;}).catch(()=>{});
 
 socket.emit('register-agent');
-socket.on('registered', ()=>{ addT('system','Agent dashboard ready'); });
 
-socket.on('queue-update', ({queue}) => {
-  queueData = queue;
+socket.on('customer-list', list=>{ customers=list; renderCustomers(); });
+socket.on('customer-online', ({customerId})=>{ onlineCustomers.add(customerId); renderCustomers(); updateOnlineCount(); });
+socket.on('customer-offline', ({customerId})=>{ onlineCustomers.delete(customerId); ringingCustomers.delete(customerId); renderCustomers(); updateOnlineCount(); });
+socket.on('call-ringing', ({customerId})=>{ ringingCustomers.add(customerId); renderCustomers(); addT('system','Calling '+getCustomerName(customerId)+'...'); });
+socket.on('call-answered', ({customerId})=>{ ringingCustomers.delete(customerId); renderCustomers(); addT('system',getCustomerName(customerId)+' answered — AI is collecting details'); });
+socket.on('call-declined', ({customerId})=>{ ringingCustomers.delete(customerId); renderCustomers(); addT('system',getCustomerName(customerId)+' declined the call'); });
+socket.on('call-error', ({msg})=>{ alert(msg); });
+
+socket.on('queue-update', ({queue})=>{
   renderQueue(queue);
-  document.getElementById('queueBadge').textContent = queue.length;
-  document.getElementById('statQueue').textContent = queue.length;
+  document.getElementById('qBadge').textContent=queue.length;
+  document.getElementById('stQueue').textContent=queue.length;
 });
 
-socket.on('connect-to-customer', ({customerSocketId, details}) => {
-  activeCustomerSocketId = customerSocketId;
+socket.on('connect-to-customer', ({customerId, socketId, details})=>{
+  activeCustomerId=customerId;
+  activeCustomerSocketId=socketId;
   showDetails(details);
-  updateCallUI('human-active');
-  addT('system', 'Connected to customer — you can now speak directly');
-  document.getElementById('msgInput').disabled = false;
-  document.getElementById('sendBtn').disabled = false;
-  document.getElementById('endBtn').disabled = false;
-  callStart = Date.now();
-  timerInterval = setInterval(updateTimer, 1000);
-  // Signal customer for WebRTC
-  socket.emit('agent-ready', {customerSocketId});
+  updateCallUI('human');
+  addT('system','Connected to '+getCustomerName(customerId)+' — ask them to upload bank statement PDF');
+  document.getElementById('msgInput').disabled=false;
+  document.getElementById('sendBtn').disabled=false;
+  document.getElementById('endBtn').disabled=false;
+  callStart=Date.now();
+  timerInterval=setInterval(updateTimer,1000);
+  socket.emit('agent-ready',{customerId});
 });
 
-socket.on('offer', async({sdp}) => {
-  addT('system','Customer audio connecting...');
-  try {
-    if(!pc){ addT('system','⚠ Connect your audio first'); return; }
+socket.on('offer', async({sdp, customerId})=>{
+  addT('system','Connecting audio...');
+  if(!pc){ addT('system','⚠ Connect your audio first'); return; }
+  try{
     await pc.setRemoteDescription(new RTCSessionDescription(sdp));
-    const ans = await pc.createAnswer();
+    const ans=await pc.createAnswer();
     await pc.setLocalDescription(ans);
-    socket.emit('answer', {target: activeCustomerSocketId, sdp: pc.localDescription});
-    addT('system','Audio handshake done ✓');
-  } catch(e){ addT('system','Error: '+e.message); }
+    socket.emit('answer',{target:activeCustomerId,sdp:pc.localDescription});
+    addT('system','Audio connected ✓');
+  } catch(e){ addT('system','Audio error: '+e.message); }
 });
 
-socket.on('ice-candidate', async({candidate}) => {
+socket.on('ice-candidate', async({candidate})=>{
   if(pc&&candidate){ try{await pc.addIceCandidate(new RTCIceCandidate(candidate));}catch(e){} }
 });
 
-socket.on('chat-message', ({text, role}) => {
-  addT(role, text);
-});
+socket.on('chat-message', ({text,role,customerId})=>{ addT(role,text); });
 
 async function connectAudio(){
   try{
-    localStream = await navigator.mediaDevices.getUserMedia({audio:true,video:false});
-    pc = new RTCPeerConnection(iceConfig);
-    pc.onicecandidate = e => { if(e.candidate&&activeCustomerSocketId) socket.emit('ice-candidate',{target:activeCustomerSocketId,candidate:e.candidate}); };
-    pc.oniceconnectionstatechange = () => addT('system','Connection: '+pc.iceConnectionState);
-    pc.ontrack = e => { addT('system','Customer audio live ✓'); const a=document.getElementById('remoteAudio'); a.srcObject=e.streams[0]; a.play().catch(()=>{}); };
+    localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+    pc=new RTCPeerConnection(iceConfig);
+    pc.onicecandidate=e=>{ if(e.candidate&&activeCustomerId) socket.emit('ice-candidate',{target:activeCustomerId,candidate:e.candidate}); };
+    pc.oniceconnectionstatechange=()=>addT('system','Connection: '+pc.iceConnectionState);
+    pc.ontrack=e=>{ addT('system','Customer audio live ✓'); const a=document.getElementById('remoteAudio'); a.srcObject=e.streams[0]; a.play().catch(()=>{}); };
     localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
     document.getElementById('connectBtn').disabled=true;
     document.getElementById('connectBtn').textContent='✓ Audio Ready';
-    addT('system','Mic connected — pick a lead from the queue');
-    // If already connected to a customer, signal them now
-    if(activeCustomerSocketId) socket.emit('agent-ready',{customerSocketId:activeCustomerSocketId});
+    addT('system','Mic ready — now call a customer from the list');
   } catch(e){ alert('Mic error: '+e.message); }
 }
 
-function pickupLead(customerSocketId){
-  socket.emit('pickup-lead', {customerSocketId});
+function initiateCall(customerId){
+  if(!pc){ alert('Please click "Connect My Audio" first'); return; }
+  socket.emit('initiate-call',{customerId});
 }
 
-function endCurrentCall(){
-  if(activeCustomerSocketId){
-    socket.emit('end-call', {customerSocketId: activeCustomerSocketId});
-    servedCount++;
-    document.getElementById('statServed').textContent = servedCount;
-  }
-  activeCustomerSocketId = null;
+function pickupLead(customerId){
+  socket.emit('pickup-lead',{customerId});
+}
+
+function endActiveCall(){
+  if(activeCustomerId) socket.emit('end-call',{customerId:activeCustomerId});
+  servedCount++; document.getElementById('stServed').textContent=servedCount;
+  activeCustomerId=null; activeCustomerSocketId=null;
   clearInterval(timerInterval); callStart=null;
-  document.getElementById('statDuration').textContent='0:00';
+  document.getElementById('stDur').textContent='0:00';
   document.getElementById('endBtn').disabled=true;
   document.getElementById('msgInput').disabled=true;
   document.getElementById('sendBtn').disabled=true;
   document.getElementById('detailsSection').style.display='none';
   updateCallUI('idle');
-  addT('system','Call ended — pick next lead from queue');
+  addT('system','Call ended — ready for next customer');
 }
 
-function sendMessage(){
+function sendMsg(){
   const input=document.getElementById('msgInput');
   const text=input.value.trim();
-  if(!text||!activeCustomerSocketId) return;
-  socket.emit('chat-message',{text,role:'human',target:activeCustomerSocketId,customerSocketId:activeCustomerSocketId});
+  if(!text||!activeCustomerId) return;
+  socket.emit('chat-message',{customerId:activeCustomerId,text,role:'human'});
   addT('human',text);
   input.value='';
 }
 
-document.getElementById('msgInput').addEventListener('keydown',e=>{ if(e.key==='Enter') sendMessage(); });
+document.getElementById('msgInput').addEventListener('keydown',e=>{ if(e.key==='Enter') sendMsg(); });
 
-function renderQueue(queue){
-  const list=document.getElementById('queueList');
-  if(!queue.length){ list.innerHTML='<div class="queue-empty">No leads in queue</div>'; return; }
-  list.innerHTML=queue.map((item,i)=>{
-    const name=item.details?.name||'Unknown Customer';
-    const emp=item.details?.employment||'—';
-    const income=item.details?.income?'₹'+item.details.income:'—';
-    const wait=Math.floor((Date.now()-item.queuedAt)/1000);
-    const waitStr=wait<60?wait+'s':(Math.floor(wait/60)+'m '+wait%60+'s');
-    return `<div class="queue-item">
-      <div class="q-num">${item.position}</div>
-      <div class="q-info">
-        <div class="q-name">${name}</div>
-        <div class="q-meta">${emp} · ${income} · waiting ${waitStr}</div>
+async function addCustomer(){
+  const name=document.getElementById('addName').value.trim();
+  const phone=document.getElementById('addPhone').value.trim();
+  if(!name) return;
+  await fetch('/api/customers',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,phone})});
+  document.getElementById('addName').value='';
+  document.getElementById('addPhone').value='';
+  const list=await fetch('/api/customers').then(r=>r.json());
+  customers=list; renderCustomers();
+}
+
+function renderCustomers(){
+  const el=document.getElementById('customerList');
+  if(!customers.length){ el.innerHTML='<div class="empty">No customers</div>'; return; }
+  el.innerHTML=customers.map(c=>{
+    const online=onlineCustomers.has(c.id);
+    const ringing=ringingCustomers.has(c.id);
+    const initials=c.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    const statusClass=ringing?'ringing':online?'online':'';
+    const btnClass=ringing?'ringing':online?'calling':'offline';
+    const btnText=ringing?'Ringing...':online?'📞 Call':'Offline';
+    return `<div class="citem">
+      <div class="cavatar">${initials}</div>
+      <div class="cinfo">
+        <div class="cname">${c.name}</div>
+        <div class="cmeta">${c.phone||c.city||c.id}</div>
       </div>
-      <button class="q-pickup" onclick="pickupLead('${item.socketId}')">Pick Up</button>
+      <div class="cstatus ${statusClass}" title="${ringing?'Ringing':online?'Online':'Offline'}"></div>
+      <button class="call-action ${btnClass}" onclick="${online&&!ringing?`initiateCall('${c.id}')`:''}" ${(!online||ringing)?'disabled':''} >${btnText}</button>
     </div>`;
   }).join('');
 }
 
-function showDetails(details){
+function renderQueue(queue){
+  const el=document.getElementById('queueList');
+  if(!queue.length){ el.innerHTML='<div class="empty">No leads in queue</div>'; return; }
+  el.innerHTML=queue.map(item=>{
+    const wait=Math.floor((Date.now()-item.queuedAt)/1000);
+    const ws=wait<60?wait+'s':Math.floor(wait/60)+'m';
+    const emp=item.details?.employment||'—';
+    const inc=item.details?.income?'₹'+item.details.income:'—';
+    return `<div class="qitem">
+      <div class="qnum">${item.position}</div>
+      <div class="qinfo">
+        <div class="qname">${item.name}</div>
+        <div class="qmeta">${emp} · ${inc} · ${ws} wait</div>
+      </div>
+      <button class="pickup-btn" onclick="pickupLead('${item.customerId}')">Pick Up</button>
+    </div>`;
+  }).join('');
+}
+
+function showDetails(d){
   document.getElementById('detailsSection').style.display='block';
-  document.getElementById('dName').textContent=details.name||'—';
-  document.getElementById('dPan').textContent=details.pan||'—';
-  document.getElementById('dDob').textContent=details.dob||'—';
-  document.getElementById('dEmp').textContent=details.employment||'—';
-  document.getElementById('dIncome').textContent=details.income?'₹'+details.income:'—';
-  document.getElementById('dPin').textContent=details.pincode||'—';
+  document.getElementById('dName').textContent=d.name||'—';
+  document.getElementById('dPan').textContent=d.pan||'—';
+  document.getElementById('dDob').textContent=d.dob||'—';
+  document.getElementById('dEmp').textContent=d.employment||'—';
+  document.getElementById('dIncome').textContent=d.income?'₹'+d.income:'—';
+  document.getElementById('dPin').textContent=d.pincode||'—';
 }
 
 function updateCallUI(state){
-  const bar=document.getElementById('callStatus');
+  const bar=document.getElementById('callBar');
   const dot=document.getElementById('sdot');
   const title=document.getElementById('callTitle');
   const sub=document.getElementById('callSub');
-  const pill=document.getElementById('modePill');
-  bar.className='call-status '+(state==='human-active'?'human':'idle');
-  dot.className='sdot '+(state==='human-active'?'human':'');
-  if(state==='human-active'){ title.textContent='Human Agent Active'; sub.textContent='You are speaking with the customer'; pill.textContent='Human Mode'; pill.className='mode-pill human'; document.getElementById('statMode').textContent='Human'; }
-  else{ title.textContent='No active call'; sub.textContent='Pick a lead from the queue to begin'; pill.textContent='Idle'; pill.className='mode-pill idle'; document.getElementById('statMode').textContent='—'; }
+  const pill=document.getElementById('mpill');
+  if(state==='human'){
+    bar.className='call-bar human'; dot.className='sdot human';
+    title.textContent='Human Agent Active';
+    sub.textContent='You are speaking with '+getCustomerName(activeCustomerId);
+    pill.textContent='Human Mode'; pill.className='mpill human';
+    document.getElementById('stMode').textContent='Human';
+  } else {
+    bar.className='call-bar'; dot.className='sdot';
+    title.textContent='No active call'; sub.textContent='Pick a lead from the queue to connect';
+    pill.textContent='Idle'; pill.className='mpill idle';
+    document.getElementById('stMode').textContent='—';
+  }
 }
 
 function updateTimer(){
   if(!callStart) return;
   const s=Math.floor((Date.now()-callStart)/1000);
-  document.getElementById('statDuration').textContent=`${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
+  document.getElementById('stDur').textContent=`${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
 }
+
+function getCustomerName(id){ return customers.find(c=>c.id===id)?.name||id; }
+function updateOnlineCount(){ document.getElementById('onlineCount').textContent=onlineCustomers.size+' online'; }
 
 function addT(role,text){
   const t=document.getElementById('transcript');
   const w=document.createElement('div');
-  if(role==='system'){ w.className='t-system'; w.textContent=text; }
-  else{ w.className='t-msg'; const labels={ai:'AI Agent',human:'You',customer:'Customer'}; w.innerHTML=`<div class="t-label ${role}">${labels[role]||role}</div><div class="t-text">${text}</div>`; }
+  if(role==='system'){ w.className='tsys'; w.textContent=text; }
+  else{ w.className='tmsg'; const L={ai:'AI Agent',human:'You',customer:'Customer'}; w.innerHTML=`<div class="tlabel ${role}">${L[role]||role}</div><div class="ttext">${text}</div>`; }
   t.appendChild(w); t.scrollTop=t.scrollHeight;
 }
 </script>

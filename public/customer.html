@@ -13,160 +13,261 @@
       --text:#0f172a;--muted:#94a3b8;--secondary:#64748b;
       --primary:#2563eb;--primary-light:#eff6ff;
       --green:#16a34a;--green-light:#f0fdf4;--green-border:#bbf7d0;
-      --amber:#d97706;--amber-light:#fffbeb;--amber-border:#fde68a;
+      --amber:#d97706;--amber-light:#fffbeb;
       --red:#dc2626;--red-light:#fef2f2;--red-border:#fecaca;
     }
     body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-    .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.06);padding:32px;width:100%;max-width:420px;display:flex;flex-direction:column;gap:22px}
+    .screen{display:none;width:100%;max-width:420px}
+    .screen.active{display:flex;flex-direction:column;align-items:center;gap:0}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.06);padding:32px;width:100%;display:flex;flex-direction:column;gap:22px}
+
+    /* ── Waiting screen ── */
+    #waitScreen{text-align:center;gap:16px}
+    .wait-icon{font-size:48px;margin-bottom:8px}
+    .wait-title{font-size:18px;font-weight:700}
+    .wait-sub{font-size:13px;color:var(--secondary)}
+    .wait-id{font-family:monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 10px;color:var(--muted);margin-top:4px}
+
+    /* ── Incoming call screen ── */
+    #incomingScreen{background:linear-gradient(135deg,#1e3a8a,#1d4ed8);border-radius:20px;padding:0;overflow:hidden}
+    .incoming-inner{padding:40px 32px;display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center}
+    .incoming-label{font-size:12px;font-weight:500;color:rgba(255,255,255,.6);letter-spacing:.08em;text-transform:uppercase}
+    .caller-avatar{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.15);border:3px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:32px;animation:ring 1.5s ease-in-out infinite}
+    @keyframes ring{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.3)}50%{box-shadow:0 0 0 16px rgba(255,255,255,0)}}
+    .caller-name{font-size:22px;font-weight:700;color:white}
+    .caller-sub{font-size:13px;color:rgba(255,255,255,.7)}
+    .call-btns{display:flex;gap:24px;margin-top:8px}
+    .call-btn{width:64px;height:64px;border-radius:50%;border:none;font-size:24px;cursor:pointer;transition:transform .15s}
+    .call-btn:hover{transform:scale(1.1)}
+    .btn-answer{background:#22c55e}
+    .btn-decline{background:#ef4444}
+
+    /* ── Active call screen ── */
+    #callScreen .card{gap:20px}
     .logo{display:flex;align-items:center;gap:10px}
-    .logo-icon{width:38px;height:38px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 2px 8px rgba(37,99,235,.3)}
-    .logo-name{font-size:16px;font-weight:700;letter-spacing:-.3px}
+    .logo-icon{width:36px;height:36px;background:var(--primary);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(37,99,235,.3)}
+    .logo-name{font-size:15px;font-weight:700}
     .logo-sub{font-size:11px;color:var(--muted)}
-    .agent-card{display:flex;flex-direction:column;align-items:center;gap:12px;padding:22px;border-radius:12px;border:1px solid var(--border);background:var(--bg);transition:all .4s}
+    .agent-card{display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px;border-radius:12px;border:1px solid var(--border);background:var(--bg);transition:all .4s}
     .agent-card.ai{background:var(--primary-light);border-color:#bfdbfe}
     .agent-card.human{background:var(--green-light);border-color:var(--green-border)}
-    .avatar{width:68px;height:68px;border-radius:50%;background:white;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:all .4s;position:relative}
+    .avatar{width:64px;height:64px;border-radius:50%;background:white;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:26px;transition:all .4s}
     .avatar.ai{border-color:#93c5fd;box-shadow:0 0 0 4px rgba(37,99,235,.08)}
     .avatar.human{border-color:#86efac;box-shadow:0 0 0 4px rgba(22,163,74,.08)}
-    .avatar.speaking::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--primary);animation:ripple 1s infinite}
-    @keyframes ripple{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.3);opacity:0}}
-    .agent-name{font-size:15px;font-weight:600}
+    .avatar.speaking{animation:speakpulse 1s ease-in-out infinite}
+    @keyframes speakpulse{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.2)}50%{box-shadow:0 0 0 10px rgba(37,99,235,0)}}
+    .agent-name{font-size:14px;font-weight:600}
     .agent-desc{font-size:12px;color:var(--secondary);text-align:center}
-    .status-pill{display:flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;background:white;border:1px solid var(--border)}
-    .pill-dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
-    .pill-dot.ai{background:var(--primary);animation:pulse 1.8s infinite}
-    .pill-dot.human{background:var(--green);animation:pulse 1.8s infinite}
+    .pill{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;background:white;border:1px solid var(--border)}
+    .pdot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
+    .pdot.ai{background:var(--primary);animation:pulse 1.8s infinite}
+    .pdot.human{background:var(--green);animation:pulse 1.8s infinite}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-    .transcript{background:#fafbfc;border:1px solid var(--border);border-radius:10px;padding:12px;height:200px;overflow-y:auto;font-size:12px;display:flex;flex-direction:column;gap:8px}
-    .transcript::-webkit-scrollbar{width:3px}
-    .transcript::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
-    .t-msg{display:flex;flex-direction:column;gap:2px}
-    .t-label{font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
-    .t-label.ai{color:var(--primary)}
-    .t-label.human{color:var(--green)}
-    .t-label.customer{color:var(--amber)}
-    .t-text{font-size:12px;line-height:1.5}
-    .t-system{font-size:11px;color:var(--muted);font-style:italic;text-align:center;padding:2px 0}
-    /* Steps indicator */
-    .steps{display:flex;gap:6px;justify-content:center}
-    .step{width:28px;height:4px;border-radius:4px;background:var(--border);transition:all .3s}
+    /* Steps */
+    .steps{display:flex;gap:5px;justify-content:center}
+    .step{height:4px;flex:1;border-radius:4px;background:var(--border);transition:all .3s}
     .step.active{background:var(--primary)}
     .step.done{background:var(--green)}
-    /* Queue waiting */
-    .queue-card{background:var(--amber-light);border:1px solid var(--amber-border);border-radius:10px;padding:16px;text-align:center;display:none}
+    /* Transcript */
+    .transcript{background:#fafbfc;border:1px solid var(--border);border-radius:10px;padding:12px;height:180px;overflow-y:auto;font-size:12px;display:flex;flex-direction:column;gap:8px}
+    .transcript::-webkit-scrollbar{width:3px}
+    .transcript::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+    .tmsg{display:flex;flex-direction:column;gap:2px}
+    .tlabel{font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+    .tlabel.ai{color:var(--primary)}.tlabel.human{color:var(--green)}.tlabel.customer{color:var(--amber)}
+    .ttext{font-size:12px;line-height:1.5}
+    .tsys{font-size:11px;color:var(--muted);font-style:italic;text-align:center;padding:2px 0}
+    /* Mic */
+    .mic-row{display:flex;gap:10px;align-items:center}
+    .mic-btn{width:52px;height:52px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;flex-shrink:0;transition:all .2s}
+    .mic-btn.idle-mic{background:var(--primary-light);border:2px solid #bfdbfe;color:var(--primary)}
+    .mic-btn.listening{background:#fee2e2;border:2px solid var(--red);color:var(--red);animation:micpulse 1s infinite}
+    .mic-btn:disabled{opacity:.4;cursor:not-allowed}
+    @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.3)}50%{box-shadow:0 0 0 8px rgba(220,38,38,0)}}
+    /* Queue card */
+    .queue-card{background:var(--amber-light);border:1px solid #fde68a;border-radius:10px;padding:16px;text-align:center;display:none}
     .queue-card.visible{display:block}
     .queue-num{font-size:28px;font-weight:700;color:var(--amber)}
-    .queue-label{font-size:12px;color:var(--amber);margin-top:4px}
+    .queue-lbl{font-size:12px;color:var(--amber);margin-top:4px}
     /* Handoff */
     .handoff-banner{display:none;align-items:center;gap:10px;padding:12px 16px;background:var(--green-light);border:1px solid var(--green-border);border-radius:10px;font-size:13px;color:var(--green);font-weight:500}
     .handoff-banner.visible{display:flex}
     /* Buttons */
-    button{width:100%;padding:12px;border-radius:10px;border:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s}
-    .btn-primary{background:var(--primary);color:white;box-shadow:0 1px 3px rgba(37,99,235,.3)}
-    .btn-primary:hover:not(:disabled){background:#1d4ed8;transform:translateY(-1px)}
-    .btn-primary:disabled{opacity:.45;cursor:not-allowed}
-    .btn-outline{background:white;color:var(--red);border:1.5px solid var(--red-border)}
-    .btn-outline:disabled{opacity:.4;cursor:not-allowed}
-    .mic-btn{width:56px;height:56px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-    .mic-btn.listening{background:#fee2e2;border:2px solid var(--red);color:var(--red);animation:micpulse 1s infinite}
-    .mic-btn.idle-mic{background:var(--primary-light);border:2px solid #bfdbfe;color:var(--primary)}
-    @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.3)}50%{box-shadow:0 0 0 8px rgba(220,38,38,0)}}
-    .input-row{display:flex;gap:10px;align-items:center}
+    .btn{width:100%;padding:12px;border-radius:10px;border:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s}
+    .btn-red-outline{background:white;color:var(--red);border:1.5px solid var(--red-border)}
+    .btn-red-outline:disabled{opacity:.4;cursor:not-allowed}
+    /* Debug */
     #debugLog{font-family:monospace;font-size:10px;color:var(--muted);background:#fafbfc;border:1px solid var(--border);border-radius:8px;padding:8px;max-height:60px;overflow-y:auto}
     audio{display:none}
   </style>
 </head>
 <body>
-<div class="card">
-  <div class="logo">
-    <div class="logo-icon">💰</div>
-    <div><div class="logo-name">LoanAssist</div><div class="logo-sub">AI-Powered Loan Service</div></div>
-  </div>
 
-  <div class="agent-card" id="agentCard">
-    <div class="avatar" id="avatar">🤖</div>
-    <div class="agent-name" id="agentName">AI Loan Assistant</div>
-    <div class="agent-desc" id="agentDesc">Ready to help with your loan application</div>
-    <div class="status-pill" id="statusPill">
-      <div class="pill-dot" id="pillDot"></div>
-      <span id="pillText">Tap Join Call to begin</span>
+<!-- SCREEN 1: Waiting for call -->
+<div class="screen active" id="waitScreen">
+  <div class="card" style="text-align:center;gap:16px;align-items:center">
+    <div class="wait-icon">📱</div>
+    <div>
+      <div class="wait-title">Ready for your call</div>
+      <div class="wait-sub" style="margin-top:6px">Your loan advisor will call you shortly.</div>
+      <div class="wait-sub" style="margin-top:4px">Please keep this page open.</div>
+    </div>
+    <div class="wait-id" id="waitId">Loading...</div>
+    <div id="waitStatus" style="font-size:12px;color:var(--muted)">Connecting to server...</div>
+  </div>
+</div>
+
+<!-- SCREEN 2: Incoming call -->
+<div class="screen" id="incomingScreen">
+  <div class="incoming-inner">
+    <div class="incoming-label">Incoming Call</div>
+    <div class="caller-avatar">💰</div>
+    <div>
+      <div class="caller-name">LoanAssist</div>
+      <div class="caller-sub">AI Loan Assistant</div>
+    </div>
+    <div class="call-btns">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+        <button class="call-btn btn-decline" onclick="declineCall()">📵</button>
+        <span style="font-size:11px;color:rgba(255,255,255,.6)">Decline</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+        <button class="call-btn btn-answer" onclick="answerCall()">📞</button>
+        <span style="font-size:11px;color:rgba(255,255,255,.6)">Answer</span>
+      </div>
     </div>
   </div>
+</div>
 
-  <!-- Steps -->
-  <div class="steps" id="stepsRow" style="display:none">
-    <div class="step" id="s1" title="Intent"></div>
-    <div class="step" id="s2" title="Name"></div>
-    <div class="step" id="s3" title="PAN & DOB"></div>
-    <div class="step" id="s4" title="Employment"></div>
-    <div class="step" id="s5" title="Income & Address"></div>
-    <div class="step" id="s6" title="DS Engine"></div>
+<!-- SCREEN 3: Active call -->
+<div class="screen" id="callScreen">
+  <div class="card">
+    <div class="logo">
+      <div class="logo-icon">💰</div>
+      <div><div class="logo-name">LoanAssist</div><div class="logo-sub">AI-Powered Loan Service</div></div>
+    </div>
+    <div class="agent-card" id="agentCard">
+      <div class="avatar" id="avatar">🤖</div>
+      <div class="agent-name" id="agentName">AI Loan Assistant</div>
+      <div class="agent-desc" id="agentDesc">Starting your loan application...</div>
+      <div class="pill"><div class="pdot ai" id="pdot"></div><span id="pillText">Connected</span></div>
+    </div>
+    <div class="steps" id="stepsRow">
+      <div class="step" id="s1"></div><div class="step" id="s2"></div>
+      <div class="step" id="s3"></div><div class="step" id="s4"></div>
+      <div class="step" id="s5"></div><div class="step" id="s6"></div>
+    </div>
+    <div class="transcript" id="transcript">
+      <div class="tsys">— Transcript will appear here —</div>
+    </div>
+    <div class="mic-row" id="micRow">
+      <button class="mic-btn idle-mic" id="micBtn" onclick="toggleRecording()" disabled>🎤</button>
+      <span style="font-size:12px;color:var(--muted)" id="micHint">Please wait...</span>
+    </div>
+    <div class="queue-card" id="queueCard">
+      <div class="queue-num" id="queueNum">#1</div>
+      <div class="queue-lbl">In queue — a human agent will connect shortly</div>
+    </div>
+    <div class="handoff-banner" id="handoffBanner">🔄 Connecting you to a human agent...</div>
+    <button class="btn btn-red-outline" id="endBtn" onclick="endCall()">End Call</button>
+    <div id="debugLog">Initialising...</div>
   </div>
-
-  <div class="transcript" id="transcript">
-    <div class="t-system">— Transcript will appear here —</div>
-  </div>
-
-  <!-- Mic input row (shown during AI call) -->
-  <div class="input-row" id="micRow" style="display:none">
-    <button class="mic-btn idle-mic" id="micBtn" onclick="toggleRecording()" disabled>🎤</button>
-    <span style="font-size:12px;color:var(--muted)" id="micHint">Tap mic to speak</span>
-  </div>
-
-  <!-- Queue waiting card -->
-  <div class="queue-card" id="queueCard">
-    <div class="queue-num" id="queueNum">#1</div>
-    <div class="queue-label">You're in the queue — a human agent will connect shortly</div>
-  </div>
-
-  <div class="handoff-banner" id="handoffBanner">
-    🔄 Connecting you to a human agent...
-  </div>
-
-  <div style="display:flex;flex-direction:column;gap:8px">
-    <button class="btn-primary" id="joinBtn" onclick="joinCall()">Join Call</button>
-    <button class="btn-outline" id="endBtn" onclick="endCall()" disabled>End Call</button>
-  </div>
-
-  <div id="debugLog">Ready.</div>
 </div>
 
 <audio id="remoteAudio" autoplay playsinline></audio>
+<audio id="ringtone" loop>
+  <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2hBKi9mqNzfrmhBIiZhpN/ftmpFISJeod3drmlFIiJgnN3drmpEIiNgmt3erWpEIiNgmdzfrGpEIiNgmdzfq2pEIiNgmdzfq2pEIiNgmdzfq2pEIiNgmtzfq2pEIiNgmtzfq2pEIiNgmtzfq2pEIiNgmtzfq2pEIiNgmtzfq2pEIiNgmtzfq2pEIiM=" type="audio/wav"/>
+</audio>
 
 <script>
+const params = new URLSearchParams(window.location.search);
+const customerId = params.get('id') || 'cust_' + Math.random().toString(36).substr(2,6);
+
 const socket = io();
 let pc = null;
 let localStream = null;
-let iceConfig = { iceServers:[{urls:'stun:stun.l.google.com:19302'}] };
+let iceConfig = {iceServers:[{urls:'stun:stun.l.google.com:19302'}]};
 let mediaRecorder = null;
 let isRecording = false;
 let conversationHistory = [];
 let collectedDetails = {};
-let currentStep = 0;
-let callPhase = 'idle'; // idle | ai | queued | human
+let callPhase = 'waiting';
 
-const STEPS = ['intent','name','pan_dob','employment','income_address','ds_engine'];
+function log(m){ const d=document.getElementById('debugLog'); const l=document.createElement('div'); l.textContent=new Date().toLocaleTimeString('en',{hour12:false})+' '+m; d.appendChild(l); d.scrollTop=d.scrollHeight; }
+function showScreen(id){ ['waitScreen','incomingScreen','callScreen'].forEach(s=>{ document.getElementById(s).classList.remove('active'); }); document.getElementById(id).classList.add('active'); }
 
-function log(msg){ const d=document.getElementById('debugLog'); const l=document.createElement('div'); l.textContent=msg; d.appendChild(l); d.scrollTop=d.scrollHeight; }
+// Show customer ID on wait screen
+document.getElementById('waitId').textContent = 'Your ID: ' + customerId;
 
 fetch('/ice-config').then(r=>r.json()).then(cfg=>{iceConfig=cfg;log('ICE ready ✓');}).catch(()=>log('STUN only'));
 
-socket.emit('register-customer');
-socket.on('call-state',({state})=>updateUI(state));
-socket.on('queued',({position})=>{ document.getElementById('queueNum').textContent='#'+position; document.getElementById('queueCard').classList.add('visible'); addT('system','You are #'+position+' in queue'); });
-socket.on('handoff-triggered',({reason})=>{ addT('system','Connecting to human agent...'); document.getElementById('handoffBanner').classList.add('visible'); setTimeout(()=>document.getElementById('handoffBanner').classList.remove('visible'),5000); });
-socket.on('call-ended',()=>{ addT('system','Call ended'); cleanup(); });
-socket.on('chat-message',({text,role})=>addT(role,text));
-socket.on('answer',async({sdp})=>{ try{ await pc.setRemoteDescription(new RTCSessionDescription(sdp)); }catch(e){} });
-socket.on('ice-candidate',async({candidate})=>{ if(pc&&candidate){ try{await pc.addIceCandidate(new RTCIceCandidate(candidate));}catch(e){} } });
-socket.on('agent-ready',async()=>{ log('Agent ready — sending offer'); if(pc&&localStream) await sendOffer(); else log('No PC/stream yet'); });
+socket.on('connect', ()=>{
+  socket.emit('register-customer', { customerId });
+  document.getElementById('waitStatus').textContent = '✓ Connected — waiting for agent to call';
+  log('Connected as: '+customerId);
+});
 
-async function joinCall(){
-  const btn = document.getElementById('joinBtn');
-  btn.disabled = true;
-  btn.textContent = 'Connecting...';
+// ── Incoming call ──
+socket.on('incoming-call', ()=>{
+  callPhase = 'ringing';
+  showScreen('incomingScreen');
+  try{ document.getElementById('ringtone').play().catch(()=>{}); } catch(e){}
+  log('Incoming call!');
+});
+
+function answerCall(){
+  try{ document.getElementById('ringtone').pause(); document.getElementById('ringtone').currentTime=0; } catch(e){}
+  socket.emit('answer-call', { customerId });
+  callPhase = 'ai';
+  showScreen('callScreen');
+  startAICall();
+  log('Call answered');
+}
+
+function declineCall(){
+  try{ document.getElementById('ringtone').pause(); } catch(e){}
+  socket.emit('decline-call', { customerId });
+  showScreen('waitScreen');
+  document.getElementById('waitStatus').textContent = 'Call declined. Agent may call again.';
+  callPhase = 'waiting';
+}
+
+// ── WebRTC ──
+socket.on('agent-ready', async()=>{
+  log('Agent ready — sending offer');
+  if(pc && localStream) await sendOffer();
+});
+
+socket.on('answer', async({sdp})=>{
+  log('Got answer ✓');
+  try{ await pc.setRemoteDescription(new RTCSessionDescription(sdp)); } catch(e){ log('Answer err: '+e.message); }
+});
+
+socket.on('ice-candidate', async({candidate})=>{
+  if(pc&&candidate){ try{await pc.addIceCandidate(new RTCIceCandidate(candidate));}catch(e){} }
+});
+
+socket.on('call-state', ({state})=>{ if(state==='human-active') updateAgentUI('human'); });
+
+socket.on('handoff-triggered', ()=>{
+  addT('system','Connecting to human agent...');
+  document.getElementById('handoffBanner').classList.add('visible');
+  setTimeout(()=>document.getElementById('handoffBanner').classList.remove('visible'),5000);
+});
+
+socket.on('queued', ({position})=>{
+  document.getElementById('queueNum').textContent='#'+position;
+  document.getElementById('queueCard').classList.add('visible');
+  document.getElementById('micRow').style.display='none';
+  addT('system','You are #'+position+' in queue');
+});
+
+socket.on('call-ended', ()=>{ cleanup(); showScreen('waitScreen'); document.getElementById('waitStatus').textContent='Call ended. Thank you!'; });
+socket.on('chat-message', ({text,role})=>addT(role,text));
+
+async function startAICall(){
   try{
-    log('Getting mic...');
+    log('Requesting mic...');
     localStream = await navigator.mediaDevices.getUserMedia({audio:true,video:false});
     log('Mic granted ✓');
     pc = new RTCPeerConnection(iceConfig);
@@ -179,69 +280,56 @@ async function joinCall(){
     };
     pc.ontrack=e=>{ log('Remote audio ✓'); const a=document.getElementById('remoteAudio'); a.srcObject=e.streams[0]; a.play().catch(()=>{}); };
     localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
-    document.getElementById('endBtn').disabled=false;
-    socket.emit('start-call');
-    callPhase='ai';
-    document.getElementById('stepsRow').style.display='flex';
-    document.getElementById('micRow').style.display='flex';
-    updateUI('ai-active');
-    // Greet — wrap in try/catch so speech failure doesn't block
-    const greeting = "Namaste! Main aapka AI Loan Assistant hoon. Kya aap ek used car loan ke baare mein jaankari lena chahte hain? Are you interested in a used car loan today?";
+    await sendOffer();
+    // Greet
+    const greeting="Namaste! Main aapka LoanAssist AI assistant hoon. Kya aap aaj ek used car loan ke baare mein baat karna chahenge? Are you interested in a used car loan today?";
     addT('ai', greeting);
     setStep(0,'active');
-    try{ await aiSpeak(greeting); } catch(e){ log('Speech error: '+e.message); }
-    document.getElementById('micBtn').disabled = false;
-    document.getElementById('micHint').textContent = 'Tap mic to speak';
+    try{ await aiSpeak(greeting); } catch(e){ log('Speech: '+e.message); }
+    document.getElementById('micBtn').disabled=false;
+    document.getElementById('micHint').textContent='Tap mic to speak';
   } catch(err){
-    log('Error: '+err.message);
-    btn.disabled = false;
-    btn.textContent = 'Join Call';
-    if(err.name === 'NotAllowedError'){ alert('Please allow microphone access and try again.'); }
-    else{ alert('Could not start call: '+err.message); }
+    log('Call error: '+err.message);
+    addT('system','Could not start call: '+err.message);
   }
 }
 
 async function sendOffer(){
+  if(!pc) return;
   const o=await pc.createOffer({offerToReceiveAudio:true});
   await pc.setLocalDescription(o);
   socket.emit('offer',{target:'agent',sdp:pc.localDescription});
+  log('Offer sent');
 }
 
-// ---- AI Voice Flow ----
-async function toggleRecording(){
-  if(isRecording){ stopRecording(); return; }
-  startRecording();
-}
-
-function getSupportedMimeType(){
-  const types=['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/ogg','audio/mp4'];
-  for(const t of types){ if(MediaRecorder.isTypeSupported(t)) return t; }
+// ── Recording ──
+function getSupportedMime(){
+  for(const t of ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/ogg','audio/mp4']){
+    if(MediaRecorder.isTypeSupported(t)) return t;
+  }
   return '';
 }
 
+function toggleRecording(){ isRecording ? stopRecording() : startRecording(); }
+
 function startRecording(){
-  if(!localStream) return;
+  if(!localStream||callPhase==='queued') return;
   const chunks=[];
-  const mimeType=getSupportedMimeType();
-  log('Recording format: '+(mimeType||'default'));
-  try{
-    mediaRecorder=new MediaRecorder(localStream, mimeType?{mimeType}:{});
-  } catch(e){
-    mediaRecorder=new MediaRecorder(localStream);
-  }
+  const mime=getSupportedMime();
+  try{ mediaRecorder=new MediaRecorder(localStream,mime?{mimeType:mime}:{}); }
+  catch(e){ mediaRecorder=new MediaRecorder(localStream); }
   mediaRecorder.ondataavailable=e=>{ if(e.data.size>0) chunks.push(e.data); };
   mediaRecorder.onstop=async()=>{
     const blob=new Blob(chunks,{type:mediaRecorder.mimeType||'audio/webm'});
-    log('Recorded blob: '+blob.size+' bytes, type: '+blob.type);
-    if(blob.size < 100){ log('Recording too short — try again'); document.getElementById('micHint').textContent='Too short, tap mic again'; document.getElementById('micBtn').disabled=false; return; }
-    await processCustomerSpeech(blob);
+    log('Recorded: '+blob.size+' bytes');
+    if(blob.size<200){ document.getElementById('micHint').textContent='Too short — try again'; document.getElementById('micBtn').disabled=false; return; }
+    await processAudio(blob);
   };
   mediaRecorder.start();
   isRecording=true;
   document.getElementById('micBtn').className='mic-btn listening';
   document.getElementById('micBtn').textContent='⏹';
   document.getElementById('micHint').textContent='Recording... tap to stop';
-  document.getElementById('avatar').classList.add('speaking');
 }
 
 function stopRecording(){
@@ -250,195 +338,149 @@ function stopRecording(){
   document.getElementById('micBtn').className='mic-btn idle-mic';
   document.getElementById('micBtn').textContent='🎤';
   document.getElementById('micHint').textContent='Processing...';
-  document.getElementById('avatar').classList.remove('speaking');
 }
 
-async function processCustomerSpeech(audioBlob){
+async function processAudio(blob){
   try{
-    document.getElementById('micHint').textContent='Transcribing...';
-    // Determine file extension from mime type
-    const mime=audioBlob.type||'audio/webm';
+    document.getElementById('micBtn').disabled=true;
+    const mime=blob.type||'audio/webm';
     const ext=mime.includes('ogg')?'ogg':mime.includes('mp4')?'mp4':'webm';
-    const filename='audio.'+ext;
-    log('Sending to Whisper: '+filename+' ('+audioBlob.size+' bytes)');
-
-    const formData=new FormData();
-    formData.append('file', audioBlob, filename);
-    formData.append('model','whisper-1');
-    // Don't force language — let Whisper auto-detect Hindi/English
-    const resp=await fetch('/api/transcribe',{method:'POST',body:formData});
+    const fd=new FormData();
+    fd.append('file',blob,'audio.'+ext);
+    fd.append('model','whisper-1');
+    const resp=await fetch('/api/transcribe',{method:'POST',body:fd});
     const result=await resp.json();
-    log('Whisper response: '+JSON.stringify(result).substring(0,100));
-
-    if(result.error){ log('Whisper error: '+result.error.message); document.getElementById('micHint').textContent='Error — tap mic to retry'; document.getElementById('micBtn').disabled=false; return; }
-    const text=result.text||'';
-    if(!text.trim()){ log('Empty transcript'); document.getElementById('micHint').textContent='Didn't catch that — tap mic to retry'; document.getElementById('micBtn').disabled=false; return; }
-
-    log('Customer said: '+text);
+    log('Whisper: '+JSON.stringify(result).substring(0,80));
+    if(result.error){ log('Error: '+result.error.message); document.getElementById('micHint').textContent='Error — try again'; document.getElementById('micBtn').disabled=false; return; }
+    const text=(result.text||'').trim();
+    if(!text){ document.getElementById('micHint').textContent='Didn\'t catch that — try again'; document.getElementById('micBtn').disabled=false; return; }
     addT('customer',text);
     conversationHistory.push({role:'user',content:text});
     await getAIResponse(text);
-  } catch(e){ log('Transcribe error: '+e.message); document.getElementById('micHint').textContent='Error — tap mic to retry'; document.getElementById('micBtn').disabled=false; }
+  } catch(e){ log('Process error: '+e.message); document.getElementById('micHint').textContent='Error — try again'; document.getElementById('micBtn').disabled=false; }
 }
 
 async function getAIResponse(userText){
+  document.getElementById('micHint').textContent='AI thinking...';
   try{
-    document.getElementById('micHint').textContent='AI is thinking...';
-    document.getElementById('micBtn').disabled=true;
+    const sys=`You are a warm, professional bilingual (Hindi+English/Hinglish) AI loan assistant for LoanAssist helping customers apply for used car loans. Be concise — max 40 words per response. Ask ONE question at a time.
 
-    const systemPrompt = `You are a friendly bilingual (Hindi + English) AI loan assistant for LoanAssist, helping customers apply for used car loans. 
-You speak in a mix of Hindi and English (Hinglish) to make customers comfortable.
-Be warm, professional, and concise. Ask one question at a time.
-
-Your job is to collect these details in order:
-1. INTENT - Check if customer is interested in a used car loan
-2. FULL NAME - Ask for their complete name  
-3. PAN NUMBER & DATE OF BIRTH - Ask for PAN (format: ABCDE1234F) and DOB (DD/MM/YYYY)
-4. GENDER - Male/Female/Other
-5. EMPLOYMENT TYPE - Salaried or Self-Employed
-6. MONTHLY INCOME - In rupees
-7. PINCODE - Their area pincode
-8. FULL ADDRESS - Complete residential address
+Collect in order: 1) Intent (interested?) 2) Full name 3) PAN (format ABCDE1234F) 4) Date of birth (DD/MM/YYYY) 5) Gender 6) Employment type (Salaried/Self-Employed) 7) Monthly income (₹) 8) Pincode 9) Full address.
 
 Currently collected: ${JSON.stringify(collectedDetails)}
 
-When you have collected ALL details (name, pan, dob, gender, employment, income, pincode, address), say exactly: "DETAILS_COMPLETE" followed by a friendly message saying you're processing their application.
+When ALL details collected, say exactly "DETAILS_COMPLETE" then a friendly processing message.
+If NOT interested, say exactly "NOT_INTERESTED" then polite goodbye.
+Acknowledge each answer warmly before asking next question.`;
 
-If customer says they're NOT interested, say exactly: "NOT_INTERESTED" followed by a polite goodbye.
-
-Always acknowledge what the customer said before asking the next question.
-Keep responses under 50 words. Be conversational.`;
-
-    const resp=await fetch('/api/chat',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'gpt-4o-mini',
-        max_tokens:150,
-        messages:[{role:'system',content:systemPrompt},...conversationHistory]
-      })
-    });
-    const data=await resp.json();
-    const aiText=data.choices?.[0]?.message?.content||'Sorry, please repeat that.';
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:120,messages:[{role:'system',content:sys},...conversationHistory]})});
+    const data=await r.json();
+    if(data.error){ log('GPT error: '+data.error.message); document.getElementById('micHint').textContent='Error — try again'; document.getElementById('micBtn').disabled=false; return; }
+    const aiText=data.choices?.[0]?.message?.content||'Sorry, please repeat.';
     conversationHistory.push({role:'assistant',content:aiText});
+    extractDetails(userText);
+    socket.emit('details-collected',{customerId,details:collectedDetails});
 
-    // Extract collected details from conversation
-    extractDetails(userText, aiText);
-
-    // Check for special signals
     if(aiText.includes('DETAILS_COMPLETE')){
-      const cleanMsg=aiText.replace('DETAILS_COMPLETE','').trim();
-      addT('ai',cleanMsg);
-      await aiSpeak(cleanMsg);
-      await runDSEngine();
-      return;
+      const msg=aiText.replace('DETAILS_COMPLETE','').trim();
+      addT('ai',msg); await aiSpeak(msg); await runDS(); return;
     }
     if(aiText.includes('NOT_INTERESTED')){
-      const cleanMsg=aiText.replace('NOT_INTERESTED','').trim();
-      addT('ai',cleanMsg);
-      await aiSpeak(cleanMsg);
-      setTimeout(()=>endCall(),3000);
-      return;
+      const msg=aiText.replace('NOT_INTERESTED','').trim();
+      addT('ai',msg); await aiSpeak(msg); setTimeout(endCall,3000); return;
     }
-
     addT('ai',aiText);
     await aiSpeak(aiText);
     document.getElementById('micHint').textContent='Tap mic to speak';
     document.getElementById('micBtn').disabled=false;
-  } catch(e){ log('AI error: '+e.message); document.getElementById('micHint').textContent='Tap mic to speak'; document.getElementById('micBtn').disabled=false; }
+  } catch(e){ log('AI error: '+e.message); document.getElementById('micHint').textContent='Error — try again'; document.getElementById('micBtn').disabled=false; }
 }
 
-function extractDetails(userText, aiText){
-  const text=userText.toLowerCase();
-  // Simple extraction — in production this would be more robust
-  if(!collectedDetails.intent && (text.includes('yes')||text.includes('haan')||text.includes('interested')||text.includes('chahiye'))) { collectedDetails.intent='Yes'; setStep(0,'done'); setStep(1,'active'); }
-  const panMatch=userText.match(/[A-Z]{5}[0-9]{4}[A-Z]/i); if(panMatch) { collectedDetails.pan=panMatch[0].toUpperCase(); setStep(2,'done'); }
-  const dobMatch=userText.match(/\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}/); if(dobMatch) { collectedDetails.dob=dobMatch[0]; }
-  if(!collectedDetails.employment && (text.includes('salaried')||text.includes('salary')||text.includes('job')||text.includes('naukri'))) { collectedDetails.employment='Salaried'; setStep(3,'done'); setStep(4,'active'); }
-  if(!collectedDetails.employment && (text.includes('self')||text.includes('business')||text.includes('own'))) { collectedDetails.employment='Self-Employed'; setStep(3,'done'); setStep(4,'active'); }
-  const incomeMatch=userText.match(/\d[\d,]+/); if(incomeMatch&&!collectedDetails.income&&(text.includes('lakh')||text.includes('k')||text.includes('thousand')||parseInt(incomeMatch[0].replace(/,/g,''))>5000)) { collectedDetails.income=incomeMatch[0]; }
-  const pincodeMatch=userText.match(/\b[1-9][0-9]{5}\b/); if(pincodeMatch) { collectedDetails.pincode=pincodeMatch[0]; }
-  socket.emit('details-collected', collectedDetails);
+function extractDetails(text){
+  const t=text.toLowerCase();
+  if(!collectedDetails.intent&&(t.includes('yes')||t.includes('haan')||t.includes('ha ')||t.includes('interested')||t.includes('chahiye')||t.includes('sure'))){ collectedDetails.intent='Yes'; setStep(0,'done'); setStep(1,'active'); }
+  const pan=text.match(/[A-Z]{5}[0-9]{4}[A-Z]/i); if(pan){ collectedDetails.pan=pan[0].toUpperCase(); }
+  const dob=text.match(/\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}/); if(dob){ collectedDetails.dob=dob[0]; setStep(2,'done'); setStep(3,'active'); }
+  if(!collectedDetails.gender&&(t.includes('male')||t.includes('female')||t.includes('purush')||t.includes('mahila'))){ collectedDetails.gender=t.includes('female')||t.includes('mahila')?'Female':'Male'; }
+  if(!collectedDetails.employment&&(t.includes('salaried')||t.includes('salary')||t.includes('job')||t.includes('naukri'))){ collectedDetails.employment='Salaried'; setStep(3,'done'); setStep(4,'active'); }
+  if(!collectedDetails.employment&&(t.includes('self')||t.includes('business')||t.includes('apna'))){ collectedDetails.employment='Self-Employed'; setStep(3,'done'); setStep(4,'active'); }
+  const pin=text.match(/\b[1-9][0-9]{5}\b/); if(pin){ collectedDetails.pincode=pin[0]; setStep(4,'done'); setStep(5,'active'); }
+  const income=text.match(/\d[\d,]+/); if(income&&!collectedDetails.income){ const v=parseInt(income[0].replace(/,/g,'')); if(v>5000){ collectedDetails.income=income[0]; } }
+  // Simple name capture — if no name yet and reply looks like a name
+  if(!collectedDetails.name&&collectedDetails.intent&&text.split(' ').length<=4&&!pan&&!dob){ collectedDetails.name=text.trim(); setStep(1,'done'); setStep(2,'active'); }
 }
 
-async function runDSEngine(){
+async function runDS(){
   setStep(5,'active');
-  addT('system','Running DS engine...');
+  addT('system','Checking eligibility...');
   try{
-    const resp=await fetch('/api/ds-engine',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({details:collectedDetails})});
-    const {channel}=await resp.json();
+    const r=await fetch('/api/ds-engine',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({details:collectedDetails})});
+    const {channel}=await r.json();
     setStep(5,'done');
     if(channel==='AMBER'){
-      const msg="Aapki application process ho rahi hai. Verification ke liye aapko apni bank statement PDF upload karni hogi. Ek human agent aapse connect karenge — please thoda wait karein.";
-      addT('ai',msg);
-      await aiSpeak(msg);
-      socket.emit('add-to-queue',{details:collectedDetails});
+      const msg="Aapka application process ho gaya hai! Banking verification ke liye ek human agent aapse connect karenge. Please wait karein.";
+      addT('ai',msg); await aiSpeak(msg);
+      socket.emit('add-to-queue',{customerId,details:collectedDetails});
       callPhase='queued';
-      document.getElementById('micRow').style.display='none';
     } else if(channel==='GREEN'){
-      const msg="Great news! Aapki application approve ho gayi hai. Aapka case log kar diya gaya hai. Bahut shukriya!";
-      addT('ai',msg); await aiSpeak(msg); setTimeout(()=>endCall(),4000);
+      const msg="Great news! Aapka loan approve ho gaya hai. Case log kar diya gaya hai. Bahut shukriya!";
+      addT('ai',msg); await aiSpeak(msg); setTimeout(endCall,4000);
     } else {
-      const msg="I'm sorry, we are unable to process your application at this time. Thank you for your interest.";
-      addT('ai',msg); await aiSpeak(msg); setTimeout(()=>endCall(),4000);
+      const msg="I'm sorry, we're unable to process your application at this time. Thank you for your interest.";
+      addT('ai',msg); await aiSpeak(msg); setTimeout(endCall,4000);
     }
   } catch(e){ log('DS error: '+e.message); }
 }
 
 function aiSpeak(text){
   return new Promise(resolve=>{
+    if(!window.speechSynthesis){ resolve(); return; }
     document.getElementById('avatar').classList.add('speaking');
-    const utter=new SpeechSynthesisUtterance(text);
-    utter.lang='hi-IN';
-    utter.rate=0.95;
-    utter.pitch=1;
-    utter.onend=()=>{ document.getElementById('avatar').classList.remove('speaking'); resolve(); };
-    utter.onerror=()=>{ document.getElementById('avatar').classList.remove('speaking'); resolve(); };
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='hi-IN'; u.rate=0.95;
+    u.onend=()=>{ document.getElementById('avatar').classList.remove('speaking'); resolve(); };
+    u.onerror=()=>{ document.getElementById('avatar').classList.remove('speaking'); resolve(); };
     speechSynthesis.cancel();
-    speechSynthesis.speak(utter);
+    speechSynthesis.speak(u);
   });
 }
 
-function setStep(idx, state){
-  const el=document.getElementById('s'+(idx+1));
-  if(el) el.className='step '+state;
-}
-
-function updateUI(state){
+function updateAgentUI(type){
   const card=document.getElementById('agentCard');
-  const avatar=document.getElementById('avatar');
-  const name=document.getElementById('agentName');
-  const desc=document.getElementById('agentDesc');
-  const dot=document.getElementById('pillDot');
-  const pillText=document.getElementById('pillText');
-  if(state==='ai-active'){ card.className='agent-card ai'; avatar.className='avatar ai'; avatar.textContent='🤖'; name.textContent='AI Loan Assistant'; desc.textContent='Collecting your details'; dot.className='pill-dot ai'; pillText.textContent='AI Agent Active'; }
-  else if(state==='human-active'){ card.className='agent-card human'; avatar.className='avatar human'; avatar.textContent='👤'; name.textContent='Human Agent'; desc.textContent='A specialist is assisting you'; dot.className='pill-dot human'; pillText.textContent='Human Agent Connected'; document.getElementById('queueCard').classList.remove('visible'); }
-  else{ card.className='agent-card'; avatar.className='avatar'; avatar.textContent='🤖'; name.textContent='AI Loan Assistant'; desc.textContent='Ready to help with your loan application'; dot.className='pill-dot'; pillText.textContent='Tap Join Call to begin'; }
+  const av=document.getElementById('avatar');
+  if(type==='human'){
+    card.className='agent-card human'; av.className='avatar human'; av.textContent='👤';
+    document.getElementById('agentName').textContent='Human Agent';
+    document.getElementById('agentDesc').textContent='A specialist is now assisting you';
+    document.getElementById('pdot').className='pdot human';
+    document.getElementById('pillText').textContent='Human Agent';
+    document.getElementById('queueCard').classList.remove('visible');
+  }
 }
 
-function endCall(){ socket.emit('end-call',{}); cleanup(); }
+function setStep(i,s){ const el=document.getElementById('s'+(i+1)); if(el) el.className='step '+s; }
+
+function endCall(){ socket.emit('end-call',{customerId}); cleanup(); showScreen('waitScreen'); document.getElementById('waitStatus').textContent='Call ended. Thank you!'; }
 
 function cleanup(){
-  speechSynthesis.cancel();
+  if(window.speechSynthesis) speechSynthesis.cancel();
   if(mediaRecorder&&mediaRecorder.state!=='inactive') mediaRecorder.stop();
   if(localStream) localStream.getTracks().forEach(t=>t.stop());
   if(pc) pc.close();
-  pc=null; localStream=null; isRecording=false; callPhase='idle';
-  conversationHistory=[]; collectedDetails={}; currentStep=0;
-  document.getElementById('joinBtn').disabled=false;
-  document.getElementById('endBtn').disabled=true;
-  document.getElementById('micRow').style.display='none';
-  document.getElementById('stepsRow').style.display='none';
-  document.getElementById('queueCard').classList.remove('visible');
+  pc=null; localStream=null; isRecording=false; callPhase='waiting';
+  conversationHistory=[]; collectedDetails={};
   ['s1','s2','s3','s4','s5','s6'].forEach(id=>{ const el=document.getElementById(id); if(el) el.className='step'; });
-  updateUI('idle');
+  document.getElementById('queueCard').classList.remove('visible');
+  document.getElementById('handoffBanner').classList.remove('visible');
+  document.getElementById('micRow').style.display='flex';
+  document.getElementById('micBtn').disabled=true;
 }
 
 function addT(role,text){
   const t=document.getElementById('transcript');
   const w=document.createElement('div');
-  if(role==='system'){ w.className='t-system'; w.textContent=text; }
-  else{ w.className='t-msg'; const labels={ai:'AI Agent',human:'Human Agent',customer:'You'}; w.innerHTML=`<div class="t-label ${role}">${labels[role]||role}</div><div class="t-text">${text}</div>`; }
+  if(role==='system'){ w.className='tsys'; w.textContent=text; }
+  else{ w.className='tmsg'; const L={ai:'AI Agent',human:'Human Agent',customer:'You'}; w.innerHTML=`<div class="tlabel ${role}">${L[role]||role}</div><div class="ttext">${text}</div>`; }
   t.appendChild(w); t.scrollTop=t.scrollHeight;
 }
 </script>
